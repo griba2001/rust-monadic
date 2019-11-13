@@ -8,7 +8,7 @@
 //! ```Some( returnValue)```       a monadic return
 //! ```v <- monadic_expression```  using the monad result
 //! ```_ <- monadic_expression```  ignoring the monad result
-//! ```let z = expression```       combinig monad results
+//! ```let z = expression```       combining monad results
 //! ```guard boolean_expression``` to filter results
 //!
 
@@ -54,7 +54,6 @@ mod tests {
            Some( v * 2)
         }.collect::<Vec<i32>>();
         
-    
         assert_eq!(ys, zs);
     }
 }
