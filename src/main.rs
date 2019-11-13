@@ -1,8 +1,3 @@
-# rust-monadic
-
-Example: monadic comprehensions à la Haskell
-
-```
 use monadic::monadic;
 use num::Integer;
 
@@ -17,7 +12,3 @@ fn main() {
     
     println!("result: {:?}", xs); 
 }
-
-```
-
-result: [(2, 2), (3, 2), (4, 2), (4, 4), (5, 2), (5, 4), (6, 2), (6, 4), (6, 6)]
