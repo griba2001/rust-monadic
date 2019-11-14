@@ -2,9 +2,9 @@
 
 A macro to write Haskell style monadic code
 
-for **IntoIterator** instances of consumable elements as monads
+for [**IntoIterator**](https://doc.rust-lang.org/std/iter/trait.IntoIterator.html) instances of consumable elements as monads
 
-flat_mapping with lambdas as closures with capturing argument ownership
+*flat_mapping* with lambdas as closures with capturing argument ownership
 
 
 Example: monadic comprehensions à la Haskell
