@@ -6,7 +6,7 @@ for [**IntoIterator**](https://doc.rust-lang.org/std/iter/trait.IntoIterator.htm
 
 *flat_mapping* with lambdas as closures with capturing argument ownership
 
-Note: *let* introduce an expression, not a block.
+Note: *let* within the macro, introduces an expression, not a block.
 
 
 Example: monadic comprehensions à la Haskell
