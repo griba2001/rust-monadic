@@ -4,7 +4,7 @@ A macro to write Haskell style monadic code
 
 for [**IntoIterator**](https://doc.rust-lang.org/std/iter/trait.IntoIterator.html) instances (consumable elements) as monads
 
-[*flat_mapping*](https://doc.rust-lang.org/std/iter/trait.Iterator.html#method.flat_map) with lambdas as closures with capturing argument ownership
+[*flat_mapping*](https://doc.rust-lang.org/std/iter/trait.Iterator.html#method.flat_map) with lambdas as closures capturing argument ownership
 
 Note: *let* within the macro, introduces an expression, not a block.
 
