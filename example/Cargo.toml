@@ -9,8 +9,6 @@ license = "MIT"
 
 [[bin]]
 name="example"
-path="src/main.rs"
-
 
 [dependencies]
 monadic = {path="../monadic"}

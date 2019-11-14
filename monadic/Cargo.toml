@@ -10,6 +10,6 @@ license = "MIT"
 
 [lib]
 name="monadic"
-path="src/lib.rs"
+
 
 [dependencies]
