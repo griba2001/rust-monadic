@@ -1,8 +1,11 @@
 # rust-monadic
 
-A macro to write Haskell style monadic code 
+A macro to write Haskell style monadic code
+
 for IntoIterator instances of consumable elements as monads
+
 applying into_iter() flat_map() to lambdas as closures with capturing ownership
+
 
 Example: monadic comprehensions à la Haskell
 
