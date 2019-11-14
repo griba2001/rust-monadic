@@ -4,7 +4,7 @@ A macro to write Haskell style monadic code
 
 for **IntoIterator** instances of consumable elements as monads
 
-applying into_iter() flat_map() to lambdas as closures with capturing ownership
+flat_mapping with lambdas as closures with capturing argument ownership
 
 
 Example: monadic comprehensions à la Haskell
