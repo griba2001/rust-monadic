@@ -9,7 +9,7 @@ for [**IntoIterator**](https://doc.rust-lang.org/std/iter/trait.IntoIterator.htm
 Note: *let* within the macro, introduces an expression, not a block.
 
 You can use: 
-* ```Some( returnValue)```       a monadic return
+* ```Some( return_expresion)```  to return an expression value
 * ```v <- monadic_expression```  to use the monad result
 * ```_ <- monadic_expression```  to ignore the monad result
 * ```let z = expression```       to combine monad results
