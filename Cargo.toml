@@ -15,5 +15,5 @@ name="monadic"
 [dependencies]
 
 [dev-dependencies]
-num = "*"
+num = "0.2"
 
