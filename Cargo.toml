@@ -4,6 +4,8 @@ version = "0.1.0"
 authors = ["Gabriel Riba <griba2001@gmail.com>"]
 edition = "2018"
 license = "MIT"
+description = "macro to define monadic actions à la Haskell"
+repository = "https://github.com/griba2001/rust-monadic"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
