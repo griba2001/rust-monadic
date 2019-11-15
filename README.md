@@ -13,7 +13,7 @@ You can use:
 * ```let z = expression```       to combine monad results
 * ```guard boolean_expression``` to filter results
 
-Note: *let* within the macro, introduces an expression, not a block.
+Note: *let*, within the macro, introduces an expression, not a block.
 
 
 Example: monadic comprehensions à la Haskell
