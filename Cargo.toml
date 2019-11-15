@@ -6,6 +6,7 @@ edition = "2018"
 license = "MIT"
 description = "macro to define monadic actions à la Haskell"
 repository = "https://github.com/griba2001/rust-monadic"
+documentation = "https://github.com/griba2001/rust-monadic/docs/doc/monadic/index.html"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
