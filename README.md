@@ -8,6 +8,14 @@ for [**IntoIterator**](https://doc.rust-lang.org/std/iter/trait.IntoIterator.htm
 
 Note: *let* within the macro, introduces an expression, not a block.
 
+You can use 
+* ```Some( returnValue)```       a monadic return
+* ```v <- monadic_expression```  using the monad result
+* ```_ <- monadic_expression```  ignoring the monad result
+* ```let z = expression```       combining monad results
+* ```guard boolean_expression``` to filter results
+
+
 
 Example: monadic comprehensions à la Haskell
 
