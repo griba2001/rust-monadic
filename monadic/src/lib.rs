@@ -38,7 +38,7 @@
 
 
 
-/// monadic chaining (with flat_map) of IntoIterator's as monads
+/// converting monadic blocs of IntoIterator's as monads à la Haskell
 ///
 /// You can use: 
 /// * ```Some( return_expresion)```  to return an expression value
