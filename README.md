@@ -19,6 +19,8 @@ Note: *let*, within the macro, introduces an expression, not a block.
 Example: monadic comprehensions à la Haskell
 
 ```
+// examples/comprehension.rs
+
 use monadic::monadic;
 use num::Integer;
 
