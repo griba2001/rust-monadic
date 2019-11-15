@@ -6,8 +6,6 @@ for [**IntoIterator**](https://doc.rust-lang.org/std/iter/trait.IntoIterator.htm
 
 [*flat_mapping*](https://doc.rust-lang.org/std/iter/trait.Iterator.html#method.flat_map) with lambdas as [*move* closures](https://doc.rust-lang.org/1.30.0/book/first-edition/closures.html#move-closures) capturing the environment and argument.
 
-Note: *let* within the macro, introduces an expression, not a block.
-
 You can use: 
 * ```Some( return_expresion)```  to return an expression value
 * ```v <- monadic_expression```  to use the monad result
@@ -15,6 +13,7 @@ You can use:
 * ```let z = expression```       to combine monad results
 * ```guard boolean_expression``` to filter results
 
+Note: *let* within the macro, introduces an expression, not a block.
 
 
 Example: monadic comprehensions à la Haskell
