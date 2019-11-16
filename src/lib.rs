@@ -2,7 +2,8 @@
 //! Haskell style "monadic" macro 
 //! where monad sources should be expressions implementing IntoIterator 
 //!
-//! Each step monad expression is flat_mapped with the rest into a lazy FlatMap expression which implements IntoIterator
+//! Each monad expression is flat_mapped with the lambda expression having the monad result variable as argument and the rest as its body,
+//! into a lazy FlatMap expression which can be collected into the collection type of choice.
 //!
 //! ```
 //! # #[macro_use] extern crate monadic;
