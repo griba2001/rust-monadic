@@ -1,1 +1,0 @@
-initSidebarItems({"macro":[["monadic","converting monadic blocs of IntoIterator's as monads à la Haskell"]]});
