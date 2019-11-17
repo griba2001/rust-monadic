@@ -51,6 +51,7 @@ pub use monad::Monad; //reexporting Monad
 /// * ```let z = expression```       to combine monad results
 /// * ```guard boolean_expression``` to filter results
 ///
+/// it uses `into_iter().flat_map(` instead of the defined `bind` for wider applicability
 #[macro_export]
 macro_rules! monadic {
   (let $v:ident = $e:expr ; $($rest:tt)*) => [Some($e).into_iter().flat_map( move |$v| { monadic!($($rest)*)} )];

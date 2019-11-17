@@ -3,7 +3,7 @@
 use std::iter::{IntoIterator, FlatMap};
 use std::collections::{LinkedList, VecDeque};
 
-/// Monad<T> as supertrait of IntoIterator<Item=T>
+/// `Bind<T>` as supertrait of `IntoIterator<Item=T>`
 ///
 /// IntoIterator brings "into_iter().flat_map()" where its lazy result type FlatMap implements IntoIterator
 ///
