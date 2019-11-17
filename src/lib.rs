@@ -14,7 +14,7 @@
 //!        y <- 1..x;
 //!        guard y < x;
 //!        let z = y - 1;
-//!        Some((x,z)) 
+//!        Option::pure((x,z)) 
 //!    }.collect::<Vec<(i32,i32)>>();
 //!    
 //!    println!("result: {:?}", xs); 
@@ -30,7 +30,7 @@
 //!        let ys = monadic!{
 //!           v <- &xs;
 //!           guard v < &4;
-//!           Some( v * 2)
+//!           Option::pure( v * 2)
 //!        }.collect::<Vec<i32>>();
 //!        
 //!        assert_eq!(ys, zs);
