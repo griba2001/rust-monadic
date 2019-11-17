@@ -37,12 +37,14 @@
 //!    }
 //! ```
 
+pub mod monad;
+pub use monad::Monad; //reexporting Monad
 
 
 /// converting monadic blocs of IntoIterator's as monads à la Haskell
 ///
 /// You can use: 
-/// * ```Some( return_expresion)```  to return an expression value
+/// * ```Option::pure( return_expresion)```  to return an expression value
 /// * ```v <- monadic_expression```  to use the monad result
 /// * ```_ <- monadic_expression```  to ignore the monad result
 /// * ```let z = expression```       to combine monad results
@@ -61,7 +63,7 @@ macro_rules! monadic {
 #[cfg(test)]
 mod tests {
     use std::vec::Vec; 
-    use super::monadic;
+    use super::{monadic, Monad};
     #[test]
     fn it_works() {
         let xs = (1..5).collect::<Vec<i32>>();
@@ -71,7 +73,7 @@ mod tests {
         let ys = monadic!{
            v <- &xs;
            guard v < &4;
-           Some( v * 2)
+           Option::pure( v * 2)
         }.collect::<Vec<i32>>();
         
         assert_eq!(ys, zs);

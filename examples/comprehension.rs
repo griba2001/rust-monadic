@@ -1,4 +1,4 @@
-use monadic::monadic;
+use monadic::{monadic, Monad};
 use num::Integer;
 
 fn main() {
@@ -8,7 +8,7 @@ fn main() {
         y <- 1..x;
         guard (&y).is_odd() ;
         let z = &y + 1 ;
-        Some((x, z)) 
+        Option::pure((x, z)) 
         
     }.collect::<Vec<(i32,i32)>>();
     

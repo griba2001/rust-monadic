@@ -7,7 +7,7 @@ for [**IntoIterator**](https://doc.rust-lang.org/std/iter/trait.IntoIterator.htm
 Each step monad expression is [flat_mapped](https://doc.rust-lang.org/std/iter/trait.Iterator.html#method.flat_map) with the rest into a lazy *FlatMap* expression which implements *IntoIterator* with lambdas as [*move* closures](https://doc.rust-lang.org/1.30.0/book/first-edition/closures.html#move-closures) capturing the environment and argument. The lambda body type should also be an instance of *IntoIterator* and it will be recursively parsed as monadic.
 
 You can use: 
-* ```Some( return_expresion)```  to return an expression value
+* ```Option::pure( return_expresion)```  to return an expression value
 * ```v <- monadic_expression```  to use the monad result
 * ```_ <- monadic_expression```  to ignore the monad result
 * ```let z = expression```       to combine monad results
