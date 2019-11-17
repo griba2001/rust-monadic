@@ -6,6 +6,8 @@ for [**IntoIterator**](https://doc.rust-lang.org/std/iter/trait.IntoIterator.htm
 
 Each step monad expression is [flat_mapped](https://doc.rust-lang.org/std/iter/trait.Iterator.html#method.flat_map) with the rest into a lazy *FlatMap* expression which implements *IntoIterator* with lambdas as [*move* closures](https://doc.rust-lang.org/1.30.0/book/first-edition/closures.html#move-closures) capturing the environment and argument. The lambda body type should also be an instance of *IntoIterator* and it will be recursively parsed as monadic.
 
+The trait **Monad** is defined in module *monad* as supertrait of IntoIterator.
+
 You can use: 
 * ```Option::pure( return_expresion)```  to return an expression value
 * ```v <- monadic_expression```  to use the monad result
@@ -21,7 +23,7 @@ Example: monadic comprehensions à la Haskell
 ```
 // examples/comprehension.rs
 
-use monadic::monadic;
+use monadic::{monadic, Monad};
 use num::Integer;
 
 fn main() {
@@ -31,7 +33,7 @@ fn main() {
         y <- 1..x;
         guard (&y).is_odd() ;
         let z = &y + 1 ;
-        Some((x, z)) 
+        Option::pure((x, z)) 
         
     }.collect::<Vec<(i32,i32)>>();
     
