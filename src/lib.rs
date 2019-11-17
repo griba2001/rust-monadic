@@ -7,6 +7,7 @@
 //!
 //! ```
 //! # #[macro_use] extern crate monadic;
+//! use monadic::{monadic, Monad};
 //!
 //! # fn main() {
 //!    let xs = monadic!{ 
