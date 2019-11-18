@@ -3,19 +3,20 @@
 //! where monad sources should be expressions of type instances of IntoIterator.
 //!
 //! Each monad expression is flat_mapped with the lambda expression having the monad result variable as argument and the rest as its body,
-//! into a lazy FlatMap expression which can be collected into any instance of FromIterator..
+//! into a lazy FlatMap expression that is also an instance of IntoIterator, and can be collected into any instance of FromIterator..
 //!
 //! ```
 //! # #[macro_use] extern crate monadic;
 //! use monadic::{monadic, Monad};
+//! use num::Integer;
 //!
 //! # fn main() {
 //!    let xs = monadic!{ 
 //!        x <- 1..5;
 //!        y <- 1..x;
-//!        guard y < x;
+//!        guard x.is_odd();
 //!        let z = y - 1;
-//!        Option::pure((x,z)) 
+//!        Vec::pure((x,z)) 
 //!    }.collect::<Vec<(i32,i32)>>();
 //!    
 //!    println!("result: {:?}", xs); 
@@ -31,7 +32,7 @@
 //!        let ys = monadic!{
 //!           v <- &xs;
 //!           guard v < &4;
-//!           Option::pure( v * 2)
+//!           Vec::pure( v * 2)
 //!        }.collect::<Vec<i32>>();
 //!        
 //!        assert_eq!(ys, zs);
@@ -51,7 +52,7 @@ pub use monad::Monad; //reexporting Monad
 /// * ```let z = expression```       to combine monad results
 /// * ```guard boolean_expression``` to filter results
 ///
-/// it uses `into_iter().flat_map(` instead of the defined `bind` for wider applicability
+/// it uses `into_iter().flat_map` instead of the defined `bind` for wider applicability since the latter requires the [Sized constraint](https://doc.rust-lang.org/book/ch19-04-advanced-types.html#dynamically-sized-types-and-the-sized-trait)
 #[macro_export]
 macro_rules! monadic {
   (let $v:ident = $e:expr ; $($rest:tt)*) => [Some($e).into_iter().flat_map( move |$v| { monadic!($($rest)*)} )];
@@ -68,7 +69,7 @@ mod tests {
     use super::{monadic, Monad};
     #[test]
     fn it_works() {
-        let xs = (1..5).collect::<Vec<i32>>();
+        let xs = (1..6).collect::<Vec<i32>>();
         // expected
         let zs = (&xs).into_iter().filter(|&v| v < &4).map(|v| v*2).collect::<Vec<i32>>();
         // monadic
