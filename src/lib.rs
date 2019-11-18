@@ -3,7 +3,9 @@
 //! where monad sources should be expressions of type instances of IntoIterator.
 //!
 //! Each monad expression is flat_mapped with the lambda expression having the monad result variable as argument and the rest as its body,
-//! into a lazy FlatMap expression that is also an instance of IntoIterator, and can be collected into any instance of FromIterator..
+//! into a lazy FlatMap expression that is also an instance of IntoIterator, and can be collected into any instance of FromIterator.
+//!
+//! To use `pure` to lift a value, a monad implementation must be used, beeing Option::pure(x) the least costly option.
 //!
 //! ```
 //! # #[macro_use] extern crate monadic;
@@ -32,7 +34,7 @@
 //!        let ys = monadic!{
 //!           v <- &xs;
 //!           guard v < &4;
-//!           Vec::pure( v * 2)
+//!           Option::pure( v * 2)
 //!        }.collect::<Vec<i32>>();
 //!        
 //!        assert_eq!(ys, zs);
