@@ -5,7 +5,7 @@
 //! Each monad expression is flat_mapped with the lambda expression having the monad result variable as argument and the rest as its body,
 //! into a lazy FlatMap expression that is also an instance of IntoIterator, and can be collected into any instance of FromIterator.
 //!
-//! To use `pure` to lift a value, a monad implementation must be used, beeing Option::pure(x) the least costly option.
+//! To use `pure` to lift a value, a monad implementation must be used, beeing Option::pure(x) the least costly option, or just Some(x).
 //!
 //! ```
 //! # #[macro_use] extern crate monadic;
