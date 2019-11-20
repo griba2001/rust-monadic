@@ -9,11 +9,16 @@ use std::collections::{LinkedList, VecDeque};
 ///
 pub trait Bind<T>: IntoIterator<Item=T> + Sized { 
      
+     /// bind consumes self
+     ///
+     /// I could not do otherwise as `into_iter()` passes self by value,
+     /// so `Sized` (size known at compile time) is required for Self
      fn bind<U, F>(self, f: F) -> FlatMap<Self::IntoIter, U, F>
         where 
-          F: FnMut(T) -> U,
+          F: Fn(T) -> U,
           U: IntoIterator,
      {
+        
         self.into_iter().flat_map( f)
      }
    }
