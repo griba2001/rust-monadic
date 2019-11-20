@@ -22,6 +22,18 @@
 //!    }.collect::<Vec<(i32,i32)>>();
 //!    
 //!    println!("result: {:?}", xs); 
+//!
+//!    
+//!    let ys = monadic!{ 
+//!    
+//!        &x <- &vec![1,2,3,4];  // with item refs (&x) in the lambda argument position
+//!        guard x.is_odd() ;
+//!        let z = x + 1 ;
+//!        Option::pure((*x, z)) 
+//!        
+//!    }.collect::<Vec<(i32,i32)>>();
+//!    
+//!    println!("result: {:?}", ys); 
 //! # }
 //!
 //!  // test:
@@ -61,6 +73,7 @@ macro_rules! monadic {
   (guard $pred:expr ; $($rest:tt)*) => [(if $pred {Some(())} else {None}).into_iter().flat_map( move |_| { monadic!($($rest)*)} )];
   (_ <- $monad:expr ; $($rest:tt)* ) => [($monad).into_iter().flat_map( move |_| { monadic!($($rest)*)} )];
   ($v:ident <- $monad:expr ; $($rest:tt)* ) => [($monad).into_iter().flat_map( move |$v| { monadic!($($rest)*)} )];
+  (&$v:ident <- $monad:expr ; $($rest:tt)* ) => [($monad).into_iter().flat_map( move |$v| { monadic!($($rest)*)} )];
   ($monad:expr                            ) => [$monad];
 }
 
