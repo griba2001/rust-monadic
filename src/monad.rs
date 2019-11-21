@@ -16,7 +16,8 @@ use std::collections::{LinkedList, VecDeque};
 /// Some structures e.g. `Range` implement a supertrait of Iterator, which in turn implements IntoIterator 
 /// `impl<I: Iterator> IntoIterator for I` ∀ I:Iterator,
 /// as [documented](https://doc.rust-lang.org/stable/core/iter/#for-loops-and-intoiterator) 
-/// so bringing `std::iter::Iterator` into scope could be useful
+///
+/// Iterator and IntoIterator imports are [predefined](https://doc.rust-lang.org/std/prelude/index.html#prelude-contents)
 ///
 /// Because into_iter() passes self by value a `Sized` constraint (size known at compile time)
 /// is imposed in this supertrait.

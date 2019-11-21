@@ -12,7 +12,8 @@
 //! Some structures e.g. `Range` implement a supertrait of Iterator, which in turn implements IntoIterator 
 //! `impl<I: Iterator> IntoIterator for I` ∀ I:Iterator,
 //! as [documented](https://doc.rust-lang.org/stable/core/iter/#for-loops-and-intoiterator) 
-//! so bringing `std::iter::Iterator` into scope could be useful
+//!
+//! Iterator and IntoIterator imports are [predefined](https://doc.rust-lang.org/std/prelude/index.html#prelude-contents)
 //!
 //! ```
 //! # #[macro_use] extern crate monadic;
@@ -81,7 +82,8 @@ pub use monad::Monad; //reexporting Monad
 /// Some structures e.g. `Range` implement a supertrait of Iterator, which in turn implements IntoIterator 
 /// `impl<I: Iterator> IntoIterator for I` ∀ I:Iterator,
 /// as [documented](https://doc.rust-lang.org/stable/core/iter/#for-loops-and-intoiterator) 
-/// so bringing `std::iter::Iterator` into scope could be useful
+///
+/// Iterator and IntoIterator imports are [predefined](https://doc.rust-lang.org/std/prelude/index.html#prelude-contents)
 ///
 #[macro_export]
 macro_rules! monadic {
