@@ -7,6 +7,13 @@
 //!
 //! To use `pure` to lift a value, a monad implementation must be used, beeing Option::pure(x) the least costly option, or just Some(x).
 //!
+//! There are transitive implementation relations for some structures to be instances of IntoIterator: 
+//!
+//! Some structures e.g. `Range` implement a supertrait of Iterator, which in turn implements IntoIterator 
+//! `impl<I: Iterator> IntoIterator for I` ∀ I:Iterator,
+//! as [documented](https://doc.rust-lang.org/stable/core/iter/#for-loops-and-intoiterator) 
+//! so bringing `std::iter::Iterator` into scope could be useful
+//!
 //! ```
 //! # #[macro_use] extern crate monadic;
 //! use monadic::{monadic, Monad};
@@ -67,6 +74,15 @@ pub use monad::Monad; //reexporting Monad
 /// * ```guard boolean_expression``` to filter results
 ///
 /// it uses `into_iter().flat_map` instead of the defined `bind` for wider applicability since the latter requires the [Sized constraint](https://doc.rust-lang.org/book/ch19-04-advanced-types.html#dynamically-sized-types-and-the-sized-trait)
+///
+///
+/// There are transitive implementation relations for some structures to be instances of IntoIterator: 
+///
+/// Some structures e.g. `Range` implement a supertrait of Iterator, which in turn implements IntoIterator 
+/// `impl<I: Iterator> IntoIterator for I` ∀ I:Iterator,
+/// as [documented](https://doc.rust-lang.org/stable/core/iter/#for-loops-and-intoiterator) 
+/// so bringing `std::iter::Iterator` into scope could be useful
+///
 #[macro_export]
 macro_rules! monadic {
   (let $v:ident = $e:expr ; $($rest:tt)*) => [Some($e).into_iter().flat_map( move |$v| { monadic!($($rest)*)} )];

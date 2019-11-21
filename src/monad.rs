@@ -1,6 +1,6 @@
 // monad.rs
 
-use std::iter::{IntoIterator, FlatMap};
+use std::iter::{IntoIterator, Iterator, FlatMap};
 use std::collections::{LinkedList, VecDeque};
 
 /// `Bind` as supertrait of `IntoIterator`
@@ -9,9 +9,14 @@ use std::collections::{LinkedList, VecDeque};
 ///
 /// This trait has been mostly an essay as it is not used. 
 ///
-/// Using into_iter() directly can be applied to more cases to my surprise.
+/// Using into_iter() directly can be applied to more cases.
 ///
-/// `Range` also respond to into_iter() although it doesn't implement IntoIterator
+/// There are transitive implementation relations for some structures to be instances of IntoIterator: 
+///
+/// Some structures e.g. `Range` implement a supertrait of Iterator, which in turn implements IntoIterator 
+/// `impl<I: Iterator> IntoIterator for I` ∀ I:Iterator,
+/// as [documented](https://doc.rust-lang.org/stable/core/iter/#for-loops-and-intoiterator) 
+/// so bringing `std::iter::Iterator` into scope could be useful
 ///
 /// Because into_iter() passes self by value a `Sized` constraint (size known at compile time)
 /// is imposed in this supertrait.
