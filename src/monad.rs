@@ -74,6 +74,22 @@ impl<T> Monad for VecDeque<T>{
    }
 }
 
+/// macro based on Bind and Monad traits as supertraits of IntoIterator
+///
+/// You can use: 
+/// * ```Some( return_expresion)```  to return an expression value
+/// * ```v <- monadic_expression```  to use the monad result
+/// * ```_ <- monadic_expression```  to ignore the monad result
+/// * ```let z = expression```       to combine monad results
+/// * ```guard boolean_expression``` to filter results
+///
+/// There are transitive implementation relations for some structures to be instances of IntoIterator that only implement Iterator: 
+///
+/// All iterators implement IntoIterator where into_iter() returns the self iterator structure
+/// as [documented](https://doc.rust-lang.org/stable/core/iter/#for-loops-and-intoiterator) 
+///
+/// Iterator and IntoIterator trait imports are [predefined](https://doc.rust-lang.org/std/prelude/index.html#prelude-contents)
+///
 #[macro_export]
 macro_rules! mdo {
   (let $v:ident = $e:expr ; $($rest:tt)*) => [Some($e).bind( move |$v| { mdo!($($rest)*)} )];

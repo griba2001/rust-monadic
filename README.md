@@ -21,11 +21,11 @@ Note: *let*, within the macro, introduces an expression, not a block.
 Example1: monadic comprehensions à la Haskell (file: examples/comprehension.rs)
 
 ```
-use monadic::{monadic, Monad};
+use monadic::{mdo, monad::{Bind, Monad}};
 use num::Integer;
 
 fn main() {
-    let xs = monadic!{ 
+    let xs = mdo!{ 
     
         x <- 1..7;
         y <- 1..x;
@@ -50,11 +50,11 @@ result: [(2, 2), (3, 0), (4, 2), (4, 4), (5, 0), (5, 2), (6, 2), (6, 4), (6, 6)]
 Example2: variation with references to containers and lambda argument position (file: examples/comprehension2.rs)
 
 ```
-use monadic::{monadic, Monad};
+use monadic::{mdo, monad::{Bind, Monad}};
 use num::Integer;
 
 fn main() {
-    let xs = monadic!{ 
+    let xs = mdo!{ 
     
         &x <- &vec![1,2,3,4];
         guard x.is_odd() ;

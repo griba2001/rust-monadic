@@ -1,6 +1,6 @@
 //! definition of IntoIterator based monadic macro of Haskell style monadic action blocks
 
-/// macro which uses IntoIterator as monad
+/// macro which uses IntoIterator as monad without traits intermixed
 ///
 /// You can use: 
 /// * ```Some( return_expresion)```  to return an expression value
@@ -8,9 +8,6 @@
 /// * ```_ <- monadic_expression```  to ignore the monad result
 /// * ```let z = expression```       to combine monad results
 /// * ```guard boolean_expression``` to filter results
-///
-/// it uses `into_iter().flat_map` instead of the defined `bind` for wider applicability since the latter
-/// requires the [Sized constraint](https://doc.rust-lang.org/book/ch19-04-advanced-types.html#dynamically-sized-types-and-the-sized-trait)
 ///
 /// There are transitive implementation relations for some structures to be instances of IntoIterator that only implement Iterator: 
 ///
