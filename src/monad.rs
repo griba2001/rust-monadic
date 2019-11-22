@@ -7,20 +7,23 @@ use std::collections::{LinkedList, VecDeque};
 ///
 /// IntoIterator brings "into_iter().flat_map()" where its lazy result type FlatMap implements IntoIterator
 ///
-/// This trait has been mostly an essay as it is not used. 
+/// This trait has been mostly an essay as it is not used because of the constraints and misrecognized instances explained below. 
 ///
 /// Using into_iter() directly can be applied to more cases.
 ///
 /// There are transitive implementation relations for some structures to be instances of IntoIterator: 
 ///
-/// Some structures e.g. `Range` implement a supertrait of Iterator, which in turn implements IntoIterator 
-/// `impl<I: Iterator> IntoIterator for I` ∀ I:Iterator,
+/// All iterators implement IntoIterator where into_iter() returns the self iterator structure
 /// as [documented](https://doc.rust-lang.org/stable/core/iter/#for-loops-and-intoiterator) 
 ///
-/// Iterator and IntoIterator imports are [predefined](https://doc.rust-lang.org/std/prelude/index.html#prelude-contents)
+/// Some structures e.g. `Range` implement a supertrait of Iterator, so they are IntoIterator instances, 
+/// but they are not recognized as instances of the defined Bind as supertrait of IntoIterator and its implementation for all IntoIterators, 
+/// so the macro doesn't use the defined `bind()` but `into_iter().flatmap()`
 ///
-/// Because into_iter() passes self by value a `Sized` constraint (size known at compile time)
-/// is imposed in this supertrait.
+/// Iterator and IntoIterator trait imports are [predefined](https://doc.rust-lang.org/std/prelude/index.html#prelude-contents)
+///
+/// Because into_iter() passes self by value, a `Sized` constraint (size known at compile time)
+/// is required for Self in the use of `bind()`.
 pub trait Bind: IntoIterator + Sized { 
      
      fn bind<U, F>(self, f: F) -> FlatMap<Self::IntoIter, U, F>

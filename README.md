@@ -18,11 +18,9 @@ You can use:
 Note: *let*, within the macro, introduces an expression, not a block.
 
 
-Example: monadic comprehensions à la Haskell
+Example1: monadic comprehensions à la Haskell (file: examples/comprehension.rs)
 
 ```
-// examples/comprehension.rs
-
 use monadic::{monadic, Monad};
 use num::Integer;
 
@@ -32,7 +30,10 @@ fn main() {
         x <- 1..7;
         y <- 1..x;
         guard (&y).is_odd() ;
-        let z = &y + 1 ;
+        let z = match x.is_even() { 
+                    true => &y + 1,
+                    _ => &y - 1,
+                };
         Option::pure((x, z)) 
         
     }.collect::<Vec<(i32,i32)>>();
@@ -44,5 +45,30 @@ fn main() {
 ```bash
 $ cargo run --example comprehension
 
-result: [(2, 2), (3, 2), (4, 2), (4, 4), (5, 2), (5, 4), (6, 2), (6, 4), (6, 6)]
+result: [(2, 2), (3, 0), (4, 2), (4, 4), (5, 0), (5, 2), (6, 2), (6, 4), (6, 6)]
+```
+Example2: variation with references to containers and lambda argument position (file: examples/comprehension2.rs)
+
+```
+use monadic::{monadic, Monad};
+use num::Integer;
+
+fn main() {
+    let xs = monadic!{ 
+    
+        &x <- &vec![1,2,3,4];
+        guard x.is_odd() ;
+        let z = x + 1 ;
+        Option::pure((*x, z)) 
+        
+    }.collect::<Vec<(i32,i32)>>();
+    
+    println!("result: {:?}", xs); 
+}
+
+```
+```bash
+$ cargo run --example comprehension2
+
+result: [(1, 2), (3, 4)]
 ```

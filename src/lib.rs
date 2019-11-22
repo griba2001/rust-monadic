@@ -7,13 +7,16 @@
 //!
 //! To use `pure` to lift a value, a monad implementation must be used, beeing Option::pure(x) the least costly option, or just Some(x).
 //!
-//! There are transitive implementation relations for some structures to be instances of IntoIterator: 
+//! There are transitive implementation relations for some structures to be instances of IntoIterator:
 //!
-//! Some structures e.g. `Range` implement a supertrait of Iterator, which in turn implements IntoIterator 
-//! `impl<I: Iterator> IntoIterator for I` ∀ I:Iterator,
+//! All iterators implement IntoIterator where into_iter() returns the self iterator structure
 //! as [documented](https://doc.rust-lang.org/stable/core/iter/#for-loops-and-intoiterator) 
 //!
-//! Iterator and IntoIterator imports are [predefined](https://doc.rust-lang.org/std/prelude/index.html#prelude-contents)
+//! Some structures e.g. `Range` implement a supertrait of Iterator, so they are IntoIterator instances, 
+//! but they are not recognized as instances of the defined Bind as supertrait of IntoIterator and its implementation for all IntoIterators, 
+//! so the macro doesn't use the defined `bind()` but `into_iter().flatmap()`
+//!
+//! Iterator and IntoIterator trait imports are [predefined](https://doc.rust-lang.org/std/prelude/index.html#prelude-contents)
 //!
 //! ```
 //! # #[macro_use] extern crate monadic;
@@ -21,17 +24,25 @@
 //! use num::Integer;
 //!
 //! # fn main() {
+//!    // available in examples/comprehension.rs
+//!
 //!    let xs = monadic!{ 
-//!        x <- 1..5;
-//!        y <- 1..x;
-//!        guard x.is_odd();
-//!        let z = y - 1;
-//!        Vec::pure((x,z)) 
+//!
+//!            x <- 1..7;
+//!            y <- 1..x;
+//!            guard (&y).is_odd() ;
+//!            let z = match x.is_even() { 
+//!                        true => &y + 1,
+//!                        _ => &y - 1,
+//!                    };
+//!            Option::pure((x, z)) 
+//!            
 //!    }.collect::<Vec<(i32,i32)>>();
 //!    
 //!    println!("result: {:?}", xs); 
 //!
-//!    
+//!    // now with container and item references, available in examples/comprehension2.rs
+//!
 //!    let ys = monadic!{ 
 //!    
 //!        &x <- &vec![1,2,3,4];  // with item refs (&x) in the lambda argument position
@@ -43,22 +54,6 @@
 //!    
 //!    println!("result: {:?}", ys); 
 //! # }
-//!
-//!  // test:
-//!
-//!  fn it_works() {
-//!        let xs = (1..5).collect::<Vec<i32>>();
-//!        // expected
-//!        let zs = (&xs).into_iter().filter(|&v| v < &4).map(|v| v*2).collect::<Vec<i32>>();
-//!        // monadic
-//!        let ys = monadic!{
-//!           v <- &xs;
-//!           guard v < &4;
-//!           Option::pure( v * 2)
-//!        }.collect::<Vec<i32>>();
-//!        
-//!        assert_eq!(ys, zs);
-//!    }
 //! ```
 
 pub mod monad;
@@ -79,11 +74,14 @@ pub use monad::Monad; //reexporting Monad
 ///
 /// There are transitive implementation relations for some structures to be instances of IntoIterator: 
 ///
-/// Some structures e.g. `Range` implement a supertrait of Iterator, which in turn implements IntoIterator 
-/// `impl<I: Iterator> IntoIterator for I` ∀ I:Iterator,
+/// All iterators implement IntoIterator where into_iter() returns the self iterator structure
 /// as [documented](https://doc.rust-lang.org/stable/core/iter/#for-loops-and-intoiterator) 
 ///
-/// Iterator and IntoIterator imports are [predefined](https://doc.rust-lang.org/std/prelude/index.html#prelude-contents)
+/// Some structures e.g. `Range` implement a supertrait of Iterator, so they are IntoIterator instances, 
+/// but they are not recognized as instances of the defined Bind as supertrait of IntoIterator and its implementation for all IntoIterators, 
+/// so the macro doesn't use the defined `bind()` but `into_iter().flatmap()`
+///
+/// Iterator and IntoIterator trait imports are [predefined](https://doc.rust-lang.org/std/prelude/index.html#prelude-contents)
 ///
 #[macro_export]
 macro_rules! monadic {
@@ -107,7 +105,7 @@ mod tests {
         let zs = (&xs).into_iter().filter(|&v| v < &4).map(|v| v*2).collect::<Vec<i32>>();
         // monadic
         let ys = monadic!{
-           v <- &xs;
+           &v <- &xs;
            guard v < &4;
            Option::pure( v * 2)
         }.collect::<Vec<i32>>();
