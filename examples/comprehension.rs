@@ -1,8 +1,8 @@
-use monadic::{monadic, Monad};
+use monadic::{mdo, monad::{Bind, Monad}};
 use num::Integer;
 
 fn main() {
-    let xs = monadic!{ 
+    let xs = mdo!{ 
     
         x <- 1..7;
         y <- 1..x;

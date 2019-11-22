@@ -1,8 +1,8 @@
-use monadic::{monadic, Monad};
+use monadic::{mdo, monad::{Bind, Monad}};
 use num::Integer;
 
 fn main() {
-    let xs = monadic!{ 
+    let xs = mdo!{ 
     
         &x <- &vec![1,2,3,4];  // with item refs (&x) in the lambda argument position
         guard x.is_odd() ;
