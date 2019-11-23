@@ -96,7 +96,7 @@ macro_rules! mdo {
   (guard $boolean:expr ; $($rest:tt)*) => [(if $boolean {Some(())} else {None}).bind( move |_| { mdo!($($rest)*)} )];
   (_ <- $monad:expr ; $($rest:tt)* ) => [($monad).bind( move |_| { mdo!($($rest)*)} )];
   ($v:ident <- $monad:expr ; $($rest:tt)* ) => [($monad).bind( move |$v| { mdo!($($rest)*)} )];
-  (&$v:ident <- $monad:expr ; $($rest:tt)* ) => [($monad).bind( move |$v| { mdo!($($rest)*)} )];
+  (&$v:ident <- $monad:expr ; $($rest:tt)* ) => [($monad).bind( move |&$v| { mdo!($($rest)*)} )];
   ($monad:expr                            ) => [$monad];
 }
 
@@ -111,7 +111,7 @@ mod tests {
         // monadic
         let ys = mdo!{
            &v <- &xs;
-           guard v < &4;
+           guard v < 4;
            Option::pure( v * 2)
         }.collect::<Vec<i32>>();
         

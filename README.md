@@ -59,7 +59,7 @@ fn main() {
         &x <- &vec![1,2,3,4];
         guard x.is_odd() ;
         let z = x + 1 ;
-        Option::pure((*x, z)) 
+        Option::pure((x, z)) 
         
     }.collect::<Vec<(i32,i32)>>();
     

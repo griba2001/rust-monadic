@@ -51,7 +51,7 @@
 //!        &x <- &vec![1,2,3,4];  // with item refs (&x) in the lambda argument position
 //!        guard x.is_odd() ;
 //!        let z = x + 1 ;
-//!        Option::pure((*x, z))  // if Monad is in scope, anyway Some((*x, z)) will do
+//!        Option::pure((x, z))  // if Monad is in scope, anyway Some((*x, z)) will do
 //!        
 //!    }.collect::<Vec<(i32,i32)>>();
 //!    

@@ -22,7 +22,7 @@ macro_rules! monadic {
   (guard $boolean:expr ; $($rest:tt)*) => [(if $boolean {Some(())} else {None}).into_iter().flat_map( move |_| { monadic!($($rest)*)} )];
   (_ <- $monad:expr ; $($rest:tt)* ) => [($monad).into_iter().flat_map( move |_| { monadic!($($rest)*)} )];
   ($v:ident <- $monad:expr ; $($rest:tt)* ) => [($monad).into_iter().flat_map( move |$v| { monadic!($($rest)*)} )];
-  (&$v:ident <- $monad:expr ; $($rest:tt)* ) => [($monad).into_iter().flat_map( move |$v| { monadic!($($rest)*)} )];
+  (&$v:ident <- $monad:expr ; $($rest:tt)* ) => [($monad).into_iter().flat_map( move |&$v| { monadic!($($rest)*)} )];
   ($monad:expr                            ) => [$monad];
 }
 
@@ -37,7 +37,7 @@ mod tests {
         // monadic
         let ys = monadic!{
            &v <- &xs;
-           guard v < &4;
+           guard v < 4;
            Some( v * 2)
         }.collect::<Vec<i32>>();
         
