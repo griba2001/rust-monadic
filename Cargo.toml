@@ -1,12 +1,14 @@
 [package]
 name = "monadic"
-version = "0.3.0"
+version = "0.3.1"
 authors = ["Gabriel Riba <griba2001@gmail.com>"]
 edition = "2018"
 license = "MIT"
 description = "macro to define Haskell style monadic action blocks"
-repository = "https://github.com/griba2001/rust-monadic"
+repository = "https://github.com/griba2001/rust-monadic.git"
+homepage = "https://github.com/griba2001/rust-monadic"
 documentation = "https://docs.rs/monadic"
+readme = "README.md"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
