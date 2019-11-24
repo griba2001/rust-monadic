@@ -10,7 +10,7 @@
 //! The macro "monadic" (module `intoiter`) uses IntoIterator into_iter() without interpositions.
 //!
 //! To use `pure` to lift a value, it has to be typed by a monad implementation, 
-//! beeing Option::pure(x) the least costly option, or just Some(x).
+//! being Option::pure(x) the least costly option, or just Some(x).
 //!
 //! There are transitive implementation relations for some structures to be instances of IntoIterator:
 //!
@@ -51,7 +51,7 @@
 //!        &x <- &vec![1,2,3,4];  // with item refs (&x) in the lambda argument position
 //!        guard x.is_odd() ;
 //!        let z = x + 1 ;
-//!        Option::pure((x, z))  // if Monad is in scope, anyway Some((*x, z)) will do
+//!        Option::pure((x, z))  // if Monad is in scope, anyway Some((x, z)) will do
 //!        
 //!    }.collect::<Vec<(i32,i32)>>();
 //!    
