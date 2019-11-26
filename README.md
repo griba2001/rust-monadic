@@ -1,8 +1,10 @@
 # rust-monadic
 
-* []
+* [the macro mdo! based on Bind and Monad over IntoIterator (iterables)](#mdo)
+* [the macro monadic! based directly on IntoIterator methods](#monadic)
+* [the macro wrdo! based on a Writer struct type as a Writer monad](#wrdo)
 
-## the macro mdo! <a name="mdo"></a>
+### the macro mdo! <a name="mdo"></a>
 
 A macro to write Haskell style monadic code
 
@@ -81,7 +83,7 @@ $ cargo run --example comprehension2
 result: [(1, 2), (3, 4)]
 ```
 
-## the macro monadic! <a name="monadic"></a>
+### the macro monadic! <a name="monadic"></a>
 
 Same functionality as *mdo* using `IntoIterator` and `Iterator` methods directly, avoiding intermixed `Bind` and `Monad` traits definitions.
 
@@ -109,10 +111,9 @@ fn main() {
 }
 
 ```
-## the Writer monad macro wrdo! <a name="monadic"></a>
+### the Writer monad macro wrdo! <a name="wrdo"></a>
 
 A [Writer monad](https://wiki.haskell.org/All_About_Monads#The_Writer_monad) adaptation macro example with String as logger, from examples/writer1.rs
-
 
 ```rust
 //! you may set the logger type by beginning with a `tell...` function within the macro `wrdo` 
