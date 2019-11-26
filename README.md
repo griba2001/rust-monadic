@@ -1,15 +1,19 @@
 # rust-monadic
 
+* []
+
+## the macro mdo! <a name="mdo"></a>
+
 A macro to write Haskell style monadic code
 
 for [**IntoIterator**](https://doc.rust-lang.org/std/iter/trait.IntoIterator.html) (iterables) as monads
 
 Each step monad expression is [flat_mapped](https://doc.rust-lang.org/std/iter/trait.Iterator.html#method.flat_map) with the rest into a lazy *FlatMap* expression which implements *IntoIterator* with lambdas as [*move* closures](https://doc.rust-lang.org/1.30.0/book/first-edition/closures.html#move-closures) capturing the environment and argument. The lambda body will be recursively parsed as monadic, and its type should also be an instance of *IntoIterator*.
 
-The trait **Monad** is defined in module *monad* as supertrait of IntoIterator.
+The traits **Bind** and **Monad** are defined in module *monad* as supertraits of IntoIterator.
 
 You can use: 
-* to return an expression value: `Option::pure( return_expresion)` or just `Some( return_expresion)`
+* to return an expression value: `pure return_expresion`
 * to use the monad result:       `v <- monadic_expression`
 * to ignore the monad result:    `_ <- monadic_expression`
 * to combine monad results:      `let z = expression`
@@ -20,7 +24,7 @@ Note: *let*, within the macro, introduces an expression, not a block.
 
 Example1: monadic comprehensions à la Haskell (file: examples/comprehension.rs)
 
-```
+```rust
 use monadic::{mdo, monad::{Bind, Monad}};
 use num::Integer;
 
@@ -34,7 +38,7 @@ fn main() {
                     true => &y + 1,
                     _ => &y - 1,
                 };
-        Option::pure((x, z)) 
+        pure (x, z)
         
     }.collect::<Vec<(i32,i32)>>();
     
@@ -49,9 +53,9 @@ $ cargo run --example comprehension
 
 result: [(2, 2), (3, 0), (4, 2), (4, 4), (5, 0), (5, 2), (6, 2), (6, 4), (6, 6)]
 ```
-Example2: variation with references to containers and lambda argument position (file: examples/comprehension2.rs)
+Example2: variation with references to container and lambda argument position (file: examples/comprehension2.rs)
 
-```
+```rust
 use monadic::{mdo, monad::{Bind, Monad}};
 use num::Integer;
 
@@ -61,7 +65,7 @@ fn main() {
         &x <- &vec![1,2,3,4];   // with item refs (&x) in the lambda argument position
         guard x.is_odd() ;
         let z = x + 1 ;
-        Option::pure((x, z)) 
+        pure (x, z)
         
     }.collect::<Vec<(i32,i32)>>();
     
@@ -77,10 +81,13 @@ $ cargo run --example comprehension2
 result: [(1, 2), (3, 4)]
 ```
 
-Using the *monadic* macro that uses `IntoIterator` and `Iterator` methods only, avoiding intermixed `Bind` and `Monad` traits defined.
+## the macro monadic! <a name="monadic"></a>
+
+Same functionality as *mdo* using `IntoIterator` and `Iterator` methods directly, avoiding intermixed `Bind` and `Monad` traits definitions.
 
 Here is example1 using it:
-```
+
+```rust
 use monadic::monadic;
 use num::Integer;
 
@@ -100,5 +107,79 @@ fn main() {
     
     println!("result: {:?}", xs); 
 }
+
+```
+## the Writer monad macro wrdo! <a name="monadic"></a>
+
+A [Writer monad](https://wiki.haskell.org/All_About_Monads#The_Writer_monad) adaptation macro example with String as logger, from examples/writer1.rs
+
+
+```rust
+//! you may set the logger type by beginning with a `tell...` function within the macro `wrdo` 
+//! or by declaring it as the result type
+//! as in `let res : Writer<(i32,i32),String = wrdo!{...}`
+
+use monadic::{wrdo, writer::*};
+use partial_application::partial;
+
+// example function for use in `censor` function through a partial partial_application
+
+fn concat_strings( mut s1: String, s2: &str) -> String {
+   s1.push_str( s2);
+   s1
+}
+
+fn main() {
+    
+    let res = wrdo!{ 
+        _ <- tell_str("log1") ;
+        x <-  Writer::pure(1) ;
+        let z = x+1;
+        pure (x, z)
+    }.censor( partial!(concat_strings => _, "log2")
+            ).listen() ;
+    
+    println!("result: {:?}", res.unwrap()); 
+}
+```
+Exec:
+
+```bash
+$ cargo run --example writer1
+
+result: ((1, 2), "log1log2")
+
+```
+Example 2 with Vec as logger from examples/writer2.rs
+
+```rust
+use monadic::{wrdo, writer::*};
+use partial_application::partial;
+
+fn concat_vecs<T: Clone>( mut s1: Vec<T>, mut s2: Vec<T>) -> Vec<T> {
+
+   s1.append( &mut s2);
+   s1
+}
+
+fn main() {
+
+    let res = wrdo!{ 
+        _ <- tell_vec( vec![1,2,3]) ;
+        x <-  Writer::pure(1) ;
+        let z = x+1;
+        pure (x, z)
+    }.censor( partial!( concat_vecs => _, vec![4,5,6])
+            ).listen() ;
+    
+    println!("result: {:?}", res.unwrap()); 
+}
+
+```
+
+```bash
+$ cargo run --example writer2
+
+result: ((1, 2), [1, 2, 3, 4, 5, 6])
 
 ```

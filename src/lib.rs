@@ -61,5 +61,7 @@
 
 pub mod monad;
 pub mod intoiter;
+pub mod monoid;
+pub mod writer;
 
 

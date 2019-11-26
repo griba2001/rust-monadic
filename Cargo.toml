@@ -1,6 +1,6 @@
 [package]
 name = "monadic"
-version = "0.3.1"
+version = "0.3.2"
 authors = ["Gabriel Riba <griba2001@gmail.com>"]
 edition = "2018"
 license = "MIT"
@@ -19,4 +19,5 @@ name="monadic"
 
 [dev-dependencies]
 num = "0.2"
+partial_application = "0.2"
 

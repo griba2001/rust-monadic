@@ -19,6 +19,17 @@ use std::collections::{LinkedList, VecDeque};
 /// is required for Self in the use of `bind()`.
 pub trait Bind: IntoIterator { 
      
+     // // into_iter() passes self by value, so Self: Sized is required
+     fn bind<U, F>(self, f: F) -> FlatMap<Self::IntoIter, U, F>
+        where 
+          F: Fn(Self::Item) -> U,
+          U: IntoIterator,
+          Self: Sized;
+   }
+   
+   
+impl<R> Bind for R where R: IntoIterator {
+
      fn bind<U, F>(self, f: F) -> FlatMap<Self::IntoIter, U, F>
         where 
           F: Fn(Self::Item) -> U,
@@ -27,10 +38,7 @@ pub trait Bind: IntoIterator {
      {
         self.into_iter().flat_map( f) // into_iter() passes self by value, so Self: Sized is required
      }
-   }
-   
-   
-impl<R> Bind for R where R: IntoIterator {}  
+}  
 
 
 pub trait Monad: Bind { 
@@ -74,7 +82,7 @@ impl<T> Monad for VecDeque<T>{
    }
 }
 
-/// macro based on Bind and Monad traits as supertraits of IntoIterator
+/// Macro based on Bind and Monad traits as supertraits of IntoIterator
 ///
 /// You can use: 
 /// * ```Some( return_expresion)```  to return an expression value
@@ -92,7 +100,8 @@ impl<T> Monad for VecDeque<T>{
 ///
 #[macro_export]
 macro_rules! mdo {
-  (let $v:ident = $e:expr ; $($rest:tt)*) => [Some($e).bind( move |$v| { mdo!($($rest)*)} )];
+  (pure $e:expr                           ) => [Option::pure($e)];
+  (let $v:ident = $e:expr ; $($rest:tt)*) => [Option::pure($e).bind( move |$v| { mdo!($($rest)*)} )];
   (guard $boolean:expr ; $($rest:tt)*) => [(if $boolean {Some(())} else {None}).bind( move |_| { mdo!($($rest)*)} )];
   (_ <- $monad:expr ; $($rest:tt)* ) => [($monad).bind( move |_| { mdo!($($rest)*)} )];
   ($v:ident <- $monad:expr ; $($rest:tt)* ) => [($monad).bind( move |$v| { mdo!($($rest)*)} )];

@@ -11,7 +11,7 @@ fn main() {
                     true => &y + 1,
                     _ => &y - 1,
                 };
-        Option::pure((x, z)) 
+        pure (x, z)
         
     }.collect::<Vec<(i32,i32)>>();
     

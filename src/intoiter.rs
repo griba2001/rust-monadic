@@ -1,6 +1,6 @@
 //! definition of IntoIterator based monadic macro of Haskell style monadic action blocks
 
-/// macro which uses IntoIterator as monad without traits intermixed
+/// Macro which uses IntoIterator methods directly
 ///
 /// You can use: 
 /// * ```Some( return_expresion)```  to return an expression value
@@ -18,6 +18,7 @@
 ///
 #[macro_export]
 macro_rules! monadic {
+  (pure $e:expr                           ) => [Some($e)];
   (let $v:ident = $e:expr ; $($rest:tt)*) => [Some($e).into_iter().flat_map( move |$v| { monadic!($($rest)*)} )];
   (guard $boolean:expr ; $($rest:tt)*) => [(if $boolean {Some(())} else {None}).into_iter().flat_map( move |_| { monadic!($($rest)*)} )];
   (_ <- $monad:expr ; $($rest:tt)* ) => [($monad).into_iter().flat_map( move |_| { monadic!($($rest)*)} )];
