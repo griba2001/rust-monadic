@@ -1,8 +1,9 @@
 # rust-monadic
 
-* [the macro mdo! based on Bind and Monad supertraits over IntoIterator (iterables)](#mdo)
-* [the macro monadic! based directly on IntoIterator and Iterator methods](#monadic)
-* [the macro wrdo! based on a Writer struct type as a Writer monad](#wrdo)
+* [A monad bloc macro based on Bind and Monad as supertraits of IntoIterator (iterables)](#mdo)
+* [A monad bloc macro based directly on IntoIterator and Iterator methods](#monadic)
+* [A Writer monad bloc macro](#wrdo)
+* [A State monad bloc macro](#stdo)
 
 ### The macro mdo! <a name="mdo" id="mdo"></a>
 
