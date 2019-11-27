@@ -30,10 +30,10 @@ impl<A: Clone, W> IntoIterator for  Writer<A, W> {
   type IntoIter = WriterIterator<A>; 
   
   fn into_iter(self) -> Self::IntoIter {
-    let Writer{ run_writer: (a, _w)} = self;
+    
     WriterIterator{
       traversed: false,
-      value: a.clone()
+      value: self.run_writer.0.clone()
     }
   }
 }
@@ -42,7 +42,8 @@ impl<A, W: Monoid, F> Writer<(A, F), W>
     where F: FnOnce(W) -> W {
 
      fn pass(self) -> Writer<A, W> {
-        let Writer{ run_writer: ((a, f), w)} = self;
+     
+        let ((a, f), w) = self.run_writer;
         Writer{ run_writer: (a, f(w))}
      }
 }
@@ -55,7 +56,7 @@ impl<A, W: Monoid + Clone> Writer<A, W> {
           F: Fn(A) -> Writer<B,W>,
           Self: Sized,
      {
-        let Writer{ run_writer: (a, w)} = self;
+        let (a, w) = self.run_writer;
         let (a1, mut w1) = f( a).run_writer ;
         Writer{ run_writer: (a1, w.mappend(&mut w1))}
      }
@@ -66,32 +67,29 @@ impl<A, W: Monoid + Clone> Writer<A, W> {
     
     
     pub fn lift<B>(self, x: B) -> Writer<B, W> {
-        let Writer{ run_writer: (_, w)} = self;
-        Writer{ run_writer: (x, w)}
+        Writer{ run_writer: (x, self.run_writer.1)}
     }
 
     pub fn unwrap_pair(self) -> (A, W) {
-        let Writer{ run_writer: (a, w)} = self;
-        (a, w)
+        self.run_writer
     }
     
     pub fn unwrap(self) -> A {
-        let Writer{ run_writer: (a, _)} = self;
-        a
+        self.run_writer.0
     }
   
     pub fn listen<>(self) -> Writer<(A, W), W> {
-        let Writer{ run_writer: (a, w)} = self;
+        let (a, w) = self.run_writer;
         Writer{ run_writer: ((a, (&w).clone()), w)}
     }
 
     pub fn listens<T, F: Fn(W) -> T>( self, f: F) -> Writer<(A, T), W> {
-        let Writer{ run_writer: (a, w)} = self;
+        let (a, w) = self.run_writer;
         Writer{ run_writer: ((a, f( (&w).clone())), w)}
     }
     
     pub fn censor<F: FnOnce(W) -> W>(self, f: F) -> Writer<A, W> {
-        let Writer{ run_writer: (a, w)} = self;
+        let (a, w) = self.run_writer;
         Writer{ run_writer: ((a,f), w)}.pass()
      }
 }
