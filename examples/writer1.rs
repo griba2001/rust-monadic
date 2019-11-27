@@ -1,6 +1,6 @@
 //! you may set the logger type by beginning with a `tell...` function within the macro `wrdo` 
-//! or by declaring it as the result type
-//! as in `let res : Writer<(i32,i32),String = wrdo!{...}`
+//! or by declaring it as the result type where String is the default if omitted
+//! as in `let res : Writer<(i32,i32),String> = wrdo!{...}`
 
 use monadic::{wrdo, writer::*};
 use monadic::util::concat_string_str;
