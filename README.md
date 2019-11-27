@@ -174,3 +174,31 @@ $ cargo run --example writer2
 result: ((1, 2), [1, 2, 3, 4, 5, 6])
 
 ```
+### The State monad macro stdo! <a name="stdo" id="stdo"></a>
+
+A [State monad](https://wiki.haskell.org/All_About_Monads#The_State_monad) adaptation macro example from examples/state1.rs
+
+```rust
+use monadic::{stdo, state::{State, get, put}};
+
+fn main() {
+  let res = stdo!{
+  
+            x <- get();
+            _ <- put( 1);
+            y <- get(); 
+            pure (x, y) 
+            
+            }.initial( 0);
+
+  println!("result: {:?}", res);  
+}
+```
+
+```bash
+$ cargo run --example state1
+
+result: ((0, 1), 1)
+
+```
+
