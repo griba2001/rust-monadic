@@ -4,7 +4,7 @@
 * [the macro monadic! based directly on IntoIterator methods](#monadic)
 * [the macro wrdo! based on a Writer struct type as a Writer monad](#wrdo)
 
-### The macro mdo! <a name="mdo"></a>
+### The macro mdo! <a name="mdo" id="mdo"></a>
 
 A macro to write Haskell style monadic code
 
@@ -83,7 +83,7 @@ $ cargo run --example comprehension2
 result: [(1, 2), (3, 4)]
 ```
 
-### The original macro monadic! <a name="monadic"></a>
+### The original macro monadic! <a name="monadic" id="monadic"></a>
 
 Same functionality as *mdo* using `IntoIterator` and `Iterator` methods directly, avoiding intermixed `Bind` and `Monad` traits definitions.
 
@@ -111,7 +111,7 @@ fn main() {
 }
 
 ```
-### The Writer monad macro wrdo! <a name="wrdo"></a>
+### The Writer monad macro wrdo! <a name="wrdo" id="wrdo"></a>
 
 A [Writer monad](https://wiki.haskell.org/All_About_Monads#The_Writer_monad) adaptation macro example with String as logger, from examples/writer1.rs
 
