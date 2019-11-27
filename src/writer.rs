@@ -88,7 +88,7 @@ impl<A, W: Monoid + Clone> Writer<A, W> {
         Writer{ run_writer: ((a, f( (&w).clone())), w)}
     }
     
-    pub fn censor<F: FnOnce(W) -> W>(self, f: F) -> Writer<A, W> {
+    pub fn censor<F: Fn(W) -> W>(self, f: F) -> Writer<A, W> {
         let (a, w) = self.run_writer;
         Writer{ run_writer: ((a,f), w)}.pass()
      }
