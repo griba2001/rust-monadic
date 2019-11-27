@@ -3,14 +3,8 @@
 //! as in `let res : Writer<(i32,i32),String = wrdo!{...}`
 
 use monadic::{wrdo, writer::*};
+use monadic::util::concat_string_str;
 use partial_application::partial;
-
-// example function for use in `censor` function through a partial partial_application
-
-fn concat_strings( mut s1: String, s2: &str) -> String {
-   s1.push_str( s2);
-   s1
-}
 
 fn main() {
     
@@ -19,7 +13,7 @@ fn main() {
         x <-  Writer::pure(1) ;
         let z = x+1;
         pure (x, z)
-    }.censor( partial!( concat_strings => _, "log2")
+    }.censor( partial!( concat_string_str => _, "log2")
             ).listen() ;
     
     println!("result: {:?}", res.unwrap()); 

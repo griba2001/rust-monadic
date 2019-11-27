@@ -85,7 +85,7 @@ impl<T> Monad for VecDeque<T>{
 /// Macro based on Bind and Monad traits as supertraits of IntoIterator
 ///
 /// You can use: 
-/// * ```Some( return_expresion)```  to return an expression value
+/// * ```pure return_expresion```  to return an expression value
 /// * ```v <- monadic_expression```  to use the monad result
 /// * ```_ <- monadic_expression```  to ignore the monad result
 /// * ```let z = expression```       to combine monad results

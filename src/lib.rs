@@ -38,7 +38,7 @@
 //!                        true => &y + 1,
 //!                        _ => &y - 1,
 //!                    };
-//!            Option::pure((x, z))  // if Monad is in scope, anyway Some((x, z)) will do
+//!            pure (x, z)
 //!            
 //!    }.collect::<Vec<(i32,i32)>>();
 //!    
@@ -51,7 +51,7 @@
 //!        &x <- &vec![1,2,3,4];  // with item refs (&x) in the lambda argument position
 //!        guard x.is_odd() ;
 //!        let z = x + 1 ;
-//!        Option::pure((x, z))  // if Monad is in scope, anyway Some((x, z)) will do
+//!        pure (x, z)
 //!        
 //!    }.collect::<Vec<(i32,i32)>>();
 //!    
@@ -63,5 +63,6 @@ pub mod monad;
 pub mod intoiter;
 pub mod monoid;
 pub mod writer;
+pub mod util;
 
 

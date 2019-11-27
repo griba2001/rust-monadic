@@ -1,7 +1,7 @@
 # rust-monadic
 
-* [the macro mdo! based on Bind and Monad over IntoIterator (iterables)](#mdo)
-* [the macro monadic! based directly on IntoIterator methods](#monadic)
+* [the macro mdo! based on Bind and Monad supertraits over IntoIterator (iterables)](#mdo)
+* [the macro monadic! based directly on IntoIterator and Iterator methods](#monadic)
 * [the macro wrdo! based on a Writer struct type as a Writer monad](#wrdo)
 
 ### The macro mdo! <a name="mdo" id="mdo"></a>
@@ -103,7 +103,7 @@ fn main() {
                     true => &y + 1,
                     _ => &y - 1,
                 };
-        Some((x, z)) 
+        pure (x, z)
         
     }.collect::<Vec<(i32,i32)>>();
     
@@ -121,23 +121,17 @@ A [Writer monad](https://wiki.haskell.org/All_About_Monads#The_Writer_monad) ada
 //! as in `let res : Writer<(i32,i32),String = wrdo!{...}`
 
 use monadic::{wrdo, writer::*};
+use monadic::util::concat_string_str;
 use partial_application::partial;
-
-// example function for use in `censor` function through a partial partial_application
-
-fn concat_strings( mut s1: String, s2: &str) -> String {
-   s1.push_str( s2);
-   s1
-}
 
 fn main() {
     
     let res = wrdo!{ 
-        _ <- tell_str("log1") ;
+        _ <- tell_str( "log1") ;
         x <-  Writer::pure(1) ;
         let z = x+1;
         pure (x, z)
-    }.censor( partial!(concat_strings => _, "log2")
+    }.censor( partial!( concat_string_str => _, "log2")
             ).listen() ;
     
     println!("result: {:?}", res.unwrap()); 
@@ -155,13 +149,9 @@ Example 2 with Vec as logger from examples/writer2.rs
 
 ```rust
 use monadic::{wrdo, writer::*};
+use monadic::util::concat_vec_array;
 use partial_application::partial;
 
-fn concat_vecs<T: Clone>( mut s1: Vec<T>, mut s2: Vec<T>) -> Vec<T> {
-
-   s1.append( &mut s2);
-   s1
-}
 
 fn main() {
 
@@ -170,7 +160,7 @@ fn main() {
         x <-  Writer::pure(1) ;
         let z = x+1;
         pure (x, z)
-    }.censor( partial!( concat_vecs => _, vec![4,5,6])
+    }.censor( partial!( concat_vec_array => _, &[4,5,6])
             ).listen() ;
     
     println!("result: {:?}", res.unwrap()); 
