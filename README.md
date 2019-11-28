@@ -190,7 +190,7 @@ fn main() {
             y <- get(); 
             pure (x, y) 
             
-            }.initial( 0);
+            }.initial_state( 0);
 
   println!("result: {:?}", res);  
 }
