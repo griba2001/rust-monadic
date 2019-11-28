@@ -1,4 +1,4 @@
-use monadic::{wrdo, writer::*};
+use monadic::{wrdo, writer::{Writer, tell_vec}};
 use monadic::util::concat_vec_array;
 use partial_application::partial;
 

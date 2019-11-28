@@ -2,7 +2,7 @@
 //! or by declaring it as the result type where String is the default if omitted
 //! as in `let res : Writer<(i32,i32),String> = wrdo!{...}`
 
-use monadic::{wrdo, writer::*};
+use monadic::{wrdo, writer::{Writer, tell_str}};
 use monadic::util::concat_string_str;
 use partial_application::partial;
 

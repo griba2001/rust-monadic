@@ -121,7 +121,7 @@ A [Writer monad](https://wiki.haskell.org/All_About_Monads#The_Writer_monad) ada
 //! or by declaring it as the result type where String is the default if omitted
 //! as in `let res : Writer<(i32,i32),String> = wrdo!{...}`
 
-use monadic::{wrdo, writer::*};
+use monadic::{wrdo, writer::{Writer, tell_str}};
 use monadic::util::concat_string_str;
 use partial_application::partial;
 
@@ -149,7 +149,7 @@ result: ((1, 2), "log1log2")
 Example 2 with Vec as logger from examples/writer2.rs
 
 ```rust
-use monadic::{wrdo, writer::*};
+use monadic::{wrdo, writer::{Writer, tell_vec}};
 use monadic::util::concat_vec_array;
 use partial_application::partial;
 
