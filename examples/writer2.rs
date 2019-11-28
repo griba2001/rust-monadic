@@ -1,4 +1,4 @@
-use monadic::{wrdo, writer::{Writer, tell_vec}};
+use monadic::{wrdo, writer::{Writer, tell}};
 use monadic::util::concat_vec_array;
 use partial_application::partial;
 
@@ -6,7 +6,7 @@ use partial_application::partial;
 fn main() {
 
     let res = wrdo!{ 
-        _ <- tell_vec( vec![1,2,3]) ;
+        _ <- tell( vec![1,2,3]) ;
         x <-  Writer::pure(1) ;
         let z = x+1;
         pure (x, z)

@@ -94,15 +94,7 @@ impl<A, W: Monoid + Clone> Writer<A, W> {
      }
 }
 
-pub fn pure_log_string<A>(x: A) -> Writer<A, String> {
-    Writer{ run_writer: (x, String::mempty())}
-}
-
 pub fn tell<W>(s: W) -> Writer<(), W> {
-        Writer{ run_writer: ((), s)}
-    }
-    
-pub fn tell_string(s: String) -> Writer<(), String> {
         Writer{ run_writer: ((), s)}
     }
 
@@ -112,10 +104,6 @@ pub fn tell_str(s: &str) -> Writer<(), String> {
 
 pub fn tell_array<T: Clone>(v: &[T]) -> Writer<(), Vec<T>> {
         Writer{ run_writer: ((), Vec::from( v))}
-    }
-
-pub fn tell_vec<T: Clone>(v: Vec<T>) -> Writer<(), Vec<T>> {
-        Writer{ run_writer: ((), v)}
     }
     
 /// Macro for a [Writer monad](https://wiki.haskell.org/All_About_Monads#The_Writer_monad)

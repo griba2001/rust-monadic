@@ -22,7 +22,7 @@ impl<S: Clone + 'static, A: Copy + 'static> State<S, A> {
           }     
   }
 
-  pub fn initial(self, s: S) -> (A, S) {
+  pub fn initial_state(self, s: S) -> (A, S) {
        (*self.run_state) (s)
   }
   

@@ -6,7 +6,7 @@ fn main() {
        _ <- put( 1);
        y <- get(); 
        pure (x, y) 
-    }.initial( 0);
+    }.initial_state( 0);
 
   println!("result: {:?}", res);  
 }

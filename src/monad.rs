@@ -121,7 +121,7 @@ mod tests {
         let ys = mdo!{
            &v <- &xs;
            guard v < 4;
-           Option::pure( v * 2)
+           pure v * 2
         }.collect::<Vec<i32>>();
         
         assert_eq!(ys, zs);

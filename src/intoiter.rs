@@ -39,7 +39,7 @@ mod tests {
         let ys = monadic!{
            &v <- &xs;
            guard v < 4;
-           Some( v * 2)
+           pure v * 2
         }.collect::<Vec<i32>>();
         
         assert_eq!(ys, zs);
