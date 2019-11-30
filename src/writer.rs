@@ -120,5 +120,29 @@ macro_rules! wrdo {
   ($monad:expr                            ) => [$monad];
 }
 
+// use crate::monad::Monad;
 
+/*
 
+// WriterT fails to parse
+
+pub struct WriterT<A, M: Monad, W = String>{ 
+  run_writer_t: M<Item=(A, W)>   // associated type not allowed
+  }
+*/
+
+/*
+
+// defining it as a monad that will have implementation for elements as pairs (A,W)
+
+pub struct WriterT<M>{ 
+  run_writer_t: M,   
+  }
+
+impl<M, A, W> for WriterT<M> 
+      where 
+        M: Monad, 
+        M::Item = (A,W) // !! equality constraints not yet supported
+   {  
+}  
+*/

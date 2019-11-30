@@ -46,3 +46,14 @@ macro_rules! stdo {
   ($v:ident <- $monad:expr ; $($rest:tt)* ) => [State::bind(($monad), move |$v| { stdo!($($rest)*)} )];
   ($monad:expr                            ) => [$monad];
 }
+
+/*
+// StateT definition fails to parse
+
+use crate::monad::Monad;
+
+pub struct StateT<S, M: Monad, A> { 
+  pub run_state_t: Box<dyn Fn(S) -> M, where M::Item=(A,S) >, 
+}
+*/
+
