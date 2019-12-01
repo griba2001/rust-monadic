@@ -9,7 +9,7 @@ fn main() {
         let z = x + 1 ;
         pure (x, z)
         
-    }.collect::<Vec<(i32,i32)>>();
+    }.collect::<Vec<(_,_)>>();
     
     println!("result: {:?}", xs); 
 }

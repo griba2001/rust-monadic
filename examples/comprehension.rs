@@ -13,7 +13,7 @@ fn main() {
                 };
         pure (x, z)
         
-    }.collect::<Vec<(i32,i32)>>();
+    }.collect::<Vec<(_,_)>>();
     
     println!("result: {:?}", xs); 
 }

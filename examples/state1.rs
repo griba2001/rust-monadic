@@ -2,10 +2,11 @@ use monadic::{stdo, state::{State, get, put}};
 
 fn main() {
   let res = stdo!{
-       x <- get();
+       x <- State::pure(9);
+       y <- get();
        _ <- put( 1);
-       y <- get(); 
-       pure (x, y) 
+       z <- get(); 
+       pure (x, y, z) 
     }.initial_state( 0);
 
   println!("result: {:?}", res);  

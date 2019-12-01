@@ -43,7 +43,7 @@ fn main() {
                 };
         pure (x, z)
         
-    }.collect::<Vec<(i32,i32)>>();
+    }.collect::<Vec<(_,_)>>();
     
     println!("result: {:?}", xs); 
 }
@@ -70,7 +70,7 @@ fn main() {
         let z = x + 1 ;
         pure (x, z)
         
-    }.collect::<Vec<(i32,i32)>>();
+    }.collect::<Vec<(_,_)>>();
     
     println!("result: {:?}", xs); 
 }
@@ -90,30 +90,17 @@ Example: console io. There is a problem capturing string variables because Strin
 // examples/console_io.rs
 
 use monadic::{mdo, monad::{Bind, Monad}, mio::{read_line, print_str, stdout_flush}};
-use std::io;
-use monadic::util::concat_string_str;
-
-    fn my_block() -> io::Result<String> {
-    
-          let bres = mdo!{
-          
-                _ <- print_str("enter line>");
-                _ <- stdout_flush();
-                li1 <- read_line();
-                let li2 = concat_string_str(li1, "def");
-                pure li2
-              }.collect::<Vec<String>>();
-              
-           Ok(bres[0].clone()) 
-           
-     }
 
 fn main() {
-              
-    match my_block() {
-      Ok( v) => println!("result: {:?}", v),
-      Err( e) => println!("err: {:?}", e), 
-    }
+    let res =mdo!{
+                _ <- print_str("enter i32>");
+                _ <- stdout_flush();
+                li1 <- read_line();
+                x <- li1.trim().parse::<i32>() ;
+                pure (x, x+1, x+2)
+              }.collect::<Vec<(_,_,_)>>();
+
+    println!("result: {:?}", res);              
 }
 ```
 
@@ -139,7 +126,7 @@ fn main() {
                 };
         pure (x, z)
         
-    }.collect::<Vec<(i32,i32)>>();
+    }.collect::<Vec<(_,_)>>();
     
     println!("result: {:?}", xs); 
 }
@@ -217,13 +204,12 @@ use monadic::{stdo, state::{State, get, put}};
 
 fn main() {
   let res = stdo!{
-  
-            x <- get();
-            _ <- put( 1);
-            y <- get(); 
-            pure (x, y) 
-            
-            }.initial_state( 0);
+       x <- State::pure(9);
+       y <- get();
+       _ <- put( 1);
+       z <- get(); 
+       pure (x, y, z) 
+    }.initial_state( 0);
 
   println!("result: {:?}", res);  
 }
@@ -232,7 +218,7 @@ fn main() {
 ```bash
 $ cargo run --example state1
 
-result: ((0, 1), 1)
+result: ((9, 0, 1), 1)
 
 ```
 
