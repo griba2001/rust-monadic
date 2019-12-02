@@ -11,9 +11,10 @@ fn main() {
                     true => &y + 1,
                     _ => &y - 1,
                 };
-        pure (x, z)
+        w <- pure 5;     // (<-) rhs pure     
+        pure (x, z, w)
         
-    }.collect::<Vec<(i32,i32)>>();
+    }.collect::<Vec<_>>();
     
     println!("result: {:?}", xs); 
 }

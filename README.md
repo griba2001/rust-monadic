@@ -93,12 +93,16 @@ use monadic::{mdo, monad::{Bind, Monad}, mio::{read_line, print_str, stdout_flus
 
 fn main() {
     let res =mdo!{
+    
+                x <- pure 1;
+                let y = x + 1;
                 _ <- print_str("enter i32>");
                 _ <- stdout_flush();
                 li1 <- read_line();
-                x <- li1.trim().parse::<i32>() ;
-                pure (x, x+1, x+2)
-              }.collect::<Vec<(_,_,_)>>();
+                z <- li1.trim().parse::<i32>() ;
+                pure (y, z)
+                
+              }.collect::<Vec<_>>();
 
     println!("result: {:?}", res);              
 }
@@ -124,9 +128,10 @@ fn main() {
                     true => &y + 1,
                     _ => &y - 1,
                 };
-        pure (x, z)
+        w <- pure 5;        // (<-) rhs pure
+        pure (x, z, w)
         
-    }.collect::<Vec<(_,_)>>();
+    }.collect::<Vec<_>>();
     
     println!("result: {:?}", xs); 
 }
@@ -137,21 +142,27 @@ fn main() {
 A [Writer monad](https://wiki.haskell.org/All_About_Monads#The_Writer_monad) adaptation macro example with String as logger, from examples/writer1.rs
 
 ```rust
-//! you may set the logger type by beginning with a `tell...` function within the macro `wrdo` 
-//! or by declaring it as the result type where String is the default if omitted
-//! as in `let res : Writer<(i32,i32),String> = wrdo!{...}`
+//! you may set the logger type 
+//! by beginning with a `tell...` function within the macro `wrdo` 
+//! or by declaring it as the result type 
+//! where String is the default if omitted
+//! as in `let res : Writer< (i32, i32), String > = wrdo!{...}`
 
-use monadic::{wrdo, writer::{Writer, tell_str}};
+#![allow(unused_imports)]
+
+use monadic::{wrdo, writer::{Writer, tell, tell_str}};
 use monadic::util::concat_string_str;
 use partial_application::partial;
 
 fn main() {
     
     let res = wrdo!{ 
-        _ <- tell_str( "log1") ;  // either `tell(String::from("log1"))`
-        x <-  Writer::pure(1) ;
+    
+        _ <- tell_str( "log1") ;   // either `tell(String::from("log1"))`
+        x <-  pure 1 ;
         let z = x+1;
         pure (x, z)
+        
     }.censor( partial!( concat_string_str => _, "log2")
             ).listen() ;
     
@@ -177,16 +188,17 @@ use partial_application::partial;
 fn main() {
 
     let res = wrdo!{ 
+    
         _ <- tell( vec![1,2,3]) ;
-        x <-  Writer::pure(1) ;
+        x <- pure 1 ;
         let z = x+1;
         pure (x, z)
+        
     }.censor( partial!( concat_vec_array => _, &[4,5,6])
             ).listen() ;
     
     println!("result: {:?}", res.unwrap()); 
 }
-
 ```
 
 ```bash
@@ -204,11 +216,13 @@ use monadic::{stdo, state::{State, get, put}};
 
 fn main() {
   let res = stdo!{
-       x <- State::pure(9);
+  
+       x <- pure 9;
        y <- get();
        _ <- put( 1);
        z <- get(); 
        pure (x, y, z) 
+       
     }.initial_state( 0);
 
   println!("result: {:?}", res);  
@@ -221,4 +235,7 @@ $ cargo run --example state1
 result: ((9, 0, 1), 1)
 
 ```
+
+Added (<-) rhs `pure`.
+
 

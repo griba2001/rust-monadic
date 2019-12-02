@@ -6,10 +6,12 @@ use partial_application::partial;
 fn main() {
 
     let res = wrdo!{ 
+    
         _ <- tell( vec![1,2,3]) ;
-        x <-  Writer::pure(1) ;
+        x <- pure 1 ;
         let z = x+1;
         pure (x, z)
+        
     }.censor( partial!( concat_vec_array => _, &[4,5,6])
             ).listen() ;
     

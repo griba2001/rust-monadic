@@ -86,7 +86,9 @@ impl<T> Monad for VecDeque<T>{
 ///
 /// You can use: 
 /// * ```pure return_expresion```  to return an expression value
+/// * ```v <- pure return_expresion```  to lift a rhs expression value with Option::pure(x)
 /// * ```v <- monadic_expression```  to use the monad result
+/// * ```&v <- &monadic_expression```  to use a reference item result from a by reference monad
 /// * ```_ <- monadic_expression```  to ignore the monad result
 /// * ```let z = expression```       to combine monad results
 /// * ```guard boolean_expression``` to filter results
@@ -104,8 +106,9 @@ macro_rules! mdo {
   (let $v:ident = $e:expr ; $($rest:tt)*) => [Option::pure($e).bind( move |$v| { mdo!($($rest)*)} )];
   (guard $boolean:expr ; $($rest:tt)*) => [(if $boolean {Some(())} else {None}).bind( move |_| { mdo!($($rest)*)} )];
   (_ <- $monad:expr ; $($rest:tt)* ) => [($monad).bind( move |_| { mdo!($($rest)*)} )];
-  ($v:ident <- $monad:expr ; $($rest:tt)* ) => [($monad).bind( move |$v| { mdo!($($rest)*)} )];
   (&$v:ident <- $monad:expr ; $($rest:tt)* ) => [($monad).bind( move |&$v| { mdo!($($rest)*)} )];
+  ($v:ident <- pure $e:expr ; $($rest:tt)* ) => [Option::pure($e).bind( move |$v| { mdo!($($rest)*)} )];
+  ($v:ident <- $monad:expr ; $($rest:tt)* ) => [($monad).bind( move |$v| { mdo!($($rest)*)} )];
   ($monad:expr                            ) => [$monad];
 }
 

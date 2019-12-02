@@ -4,7 +4,9 @@
 ///
 /// You can use: 
 /// * ```pure return_expresion```    to return an expression value
+/// * ```v <- pure return_expresion```  to lift a rhs expression value with Some(x)
 /// * ```v <- monadic_expression```  to use the monad result
+/// * ```&v <- &monadic_expression```  to use an item by ref from a by ref monad
 /// * ```_ <- monadic_expression```  to ignore the monad result
 /// * ```let z = expression```       to combine monad results
 /// * ```guard boolean_expression``` to filter results
@@ -22,8 +24,9 @@ macro_rules! monadic {
   (let $v:ident = $e:expr ; $($rest:tt)*) => [Some($e).into_iter().flat_map( move |$v| { monadic!($($rest)*)} )];
   (guard $boolean:expr ; $($rest:tt)*) => [(if $boolean {Some(())} else {None}).into_iter().flat_map( move |_| { monadic!($($rest)*)} )];
   (_ <- $monad:expr ; $($rest:tt)* ) => [($monad).into_iter().flat_map( move |_| { monadic!($($rest)*)} )];
-  ($v:ident <- $monad:expr ; $($rest:tt)* ) => [($monad).into_iter().flat_map( move |$v| { monadic!($($rest)*)} )];
   (&$v:ident <- $monad:expr ; $($rest:tt)* ) => [($monad).into_iter().flat_map( move |&$v| { monadic!($($rest)*)} )];
+  ($v:ident <- pure $e:expr ; $($rest:tt)* ) => [Some($e).into_iter().flat_map( move |$v| { monadic!($($rest)*)} )];
+  ($v:ident <- $monad:expr ; $($rest:tt)* ) => [($monad).into_iter().flat_map( move |$v| { monadic!($($rest)*)} )];
   ($monad:expr                            ) => [$monad];
 }
 

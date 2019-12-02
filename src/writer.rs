@@ -116,6 +116,7 @@ macro_rules! wrdo {
   (let $v:ident = $e:expr ; $($rest:tt)*) => [Writer::pure($e).bind( move |$v| { wrdo!($($rest)*)} )];
   (_ <- $monad:expr ; $($rest:tt)* ) => [Writer::bind( ($monad), move |_| { wrdo!($($rest)*)} )];
   (&$v:ident <- $monad:expr ; $($rest:tt)* ) => [Writer::bind( ($monad), move |&$v| { wrdo!($($rest)*)} )];
+  ($v:ident <- pure $e:expr ; $($rest:tt)* ) => [Writer::bind( Writer::pure($e), move |$v| { wrdo!($($rest)*)} )];
   ($v:ident <- $monad:expr ; $($rest:tt)* ) => [Writer::bind( ($monad), move |$v| { wrdo!($($rest)*)} )];
   ($monad:expr                            ) => [$monad];
 }
