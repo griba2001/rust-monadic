@@ -42,7 +42,6 @@ macro_rules! stdo {
   (pure $e:expr                           ) => [State::pure($e)];
   (let $v:ident = $e:expr ; $($rest:tt)*) => [State::pure($e).bind( move |$v| { stdo!($($rest)*)} )];
   (_ <- $monad:expr ; $($rest:tt)* ) => [State::bind(($monad), move |_| { stdo!($($rest)*)} )];
-  (&$v:ident <- $monad:expr ; $($rest:tt)* ) => [State::bind(($monad), move |&$v| { stdo!($($rest)*)} )];
   ($v:ident <- pure $e:expr ; $($rest:tt)* ) => [State::bind( State::pure($e), move |$v| { stdo!($($rest)*)} )];
   ($v:ident <- $monad:expr ; $($rest:tt)* ) => [State::bind(($monad), move |$v| { stdo!($($rest)*)} )];
   ($monad:expr                            ) => [$monad];

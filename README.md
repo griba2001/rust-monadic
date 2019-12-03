@@ -292,6 +292,9 @@ result: ((9, 0, 1), 1)
 
 ```
 
+Changes:
+
+v. 0.3.11: suppressed  the form "&v <- ..." from Writer and State monads. 
 v. 0.3.10: Added the Reader macro. It runs good over clonable environments e.g. HashMap.
            The State macro has been updated, using a non static lifetime for the boxed closure
            
