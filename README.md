@@ -205,7 +205,7 @@ A [Writer monad](https://wiki.haskell.org/All_About_Monads#The_Writer_monad) ada
 
 #![allow(unused_imports)]
 
-use monadic::{wrdo, writer::{Writer, tell, tell_str}};
+use monadic::{wrdo, writer::{Writer, tell, tell_str, censor_do}};
 use monadic::util::concat_string_str;
 use partial_application::partial;
 
@@ -213,13 +213,14 @@ fn main() {
     
     let res : Writer< _, String> = wrdo!{ 
     
-        _ <- tell_str( "log1") ;   
-        x <-  pure 1 ;
-        let z = x+1;
-        pure (x, z)
-        
-    }.censor( partial!( concat_string_str => _, "log2")
-            ).listen() ;
+        _ <- tell_str( "log1") ;
+        censor_do( partial!( concat_string_str => _, "log2"),
+                   wrdo!{
+                        x <-  pure 1 ;
+                        let z = x+1;
+                        pure (x, z)
+                    })
+        }.listen() ;
     
     println!("result: {:?}", res.unwrap()); 
 }
@@ -235,7 +236,7 @@ result: ((1, 2), "log1log2")
 Example 2 with Vec as logger from examples/writer2.rs
 
 ```rust
-use monadic::{wrdo, writer::{Writer, tell}};
+use monadic::{wrdo, writer::{Writer, tell, censor_do}};
 use monadic::util::concat_vec_array;
 use partial_application::partial;
 
@@ -245,12 +246,13 @@ fn main() {
     let res : Writer< _, Vec<_>> = wrdo!{ 
     
         _ <- tell( vec![1,2,3]) ;
-        x <- pure 1 ;
-        let z = x+1;
-        pure (x, z)
-        
-    }.censor( partial!( concat_vec_array => _, &[4,5,6])
-            ).listen() ;
+        censor_do( partial!( concat_vec_array => _, &[4,5,6]),
+                   wrdo!{
+                        x <-  pure 1 ;
+                        let z = x+1;
+                        pure (x, z)
+                    })
+        }.listen() ;
     
     println!("result: {:?}", res.unwrap()); 
 }
@@ -292,6 +294,8 @@ result: ((9, 0, 1), 1)
 ```
 
 Changes:
+
+v. 0.3.14: added writer function `censor_do`
 
 v. 0.3.13: added reader function `local_do`
 

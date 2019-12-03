@@ -40,7 +40,7 @@ impl<A: Clone, W> IntoIterator for  Writer<A, W> {
 }
 
 impl<A, W: Monoid, F> Writer<(A, F), W> 
-    where F: FnOnce(W) -> W {
+    where F: Fn(W) -> W {
 
      fn pass(self) -> Writer<A, W> {
      
@@ -106,6 +106,12 @@ pub fn tell_str(s: &str) -> Writer<(), String> {
 pub fn tell_array<T: Clone>(v: &[T]) -> Writer<(), Vec<T>> {
         Writer{ run_writer: ((), Vec::from( v))}
     }
+    
+pub fn censor_do<A, W: Monoid, F: Fn(W) -> W>(f: F, writer: Writer<A, W>) -> Writer<A, W> {
+        let (a, w) = writer.run_writer;
+        Writer{ run_writer: ((a,f), w)}.pass()
+     }
+          
     
 /// Macro for a [Writer monad](https://wiki.haskell.org/All_About_Monads#The_Writer_monad)
 ///
