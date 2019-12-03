@@ -5,7 +5,7 @@ use partial_application::partial;
 
 fn main() {
 
-    let res = wrdo!{ 
+    let res : Writer< _, Vec<_>> = wrdo!{ 
     
         _ <- tell( vec![1,2,3]) ;
         x <- pure 1 ;

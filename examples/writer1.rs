@@ -2,7 +2,7 @@
 //! by beginning with a `tell...` function within the macro `wrdo` 
 //! or by declaring it as the result type 
 //! where String is the default if omitted
-//! as in `let res : Writer< (i32, i32), String > = wrdo!{...}`
+//! as in `let res : Writer< _, String > = wrdo!{...}`
 
 #![allow(unused_imports)]
 
@@ -12,9 +12,9 @@ use partial_application::partial;
 
 fn main() {
     
-    let res = wrdo!{ 
+    let res : Writer< _, String> = wrdo!{ 
     
-        _ <- tell_str( "log1") ;   // either `tell(String::from("log1"))`
+        _ <- tell_str( "log1") ;   
         x <-  pure 1 ;
         let z = x+1;
         pure (x, z)
