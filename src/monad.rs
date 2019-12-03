@@ -1,4 +1,4 @@
-// monad.rs
+//! definition of Bind and Monad traits based monadic macro 
 
 use std::iter::{IntoIterator, Iterator, FlatMap};
 use std::collections::{LinkedList, VecDeque};
@@ -85,7 +85,8 @@ impl<T> Monad for VecDeque<T>{
 /// Macro based on Bind and Monad traits as supertraits of IntoIterator
 ///
 /// You can use: 
-/// * ```pure return_expresion```  to return an expression value
+/// * ```pure return_expresion```    to return an expression value
+/// * ```monadic_expression```       to end with a monad expression
 /// * ```v <- pure return_expresion```  to lift a rhs expression value with Option::pure(x)
 /// * ```v <- monadic_expression```  to use the monad result
 /// * ```&v <- &monadic_expression```  to use a reference item result from a by reference monad

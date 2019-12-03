@@ -1,4 +1,4 @@
-// mod reader
+//! A Reader monad implementation
 
 pub struct Reader<'a, E, A> { 
   pub run_reader: Box< dyn 'a + Fn(E) -> A>, 

@@ -1,4 +1,5 @@
-// mod writer
+//! A Writer monad implementation
+
 use crate::monoid::{Monoid};
 
 //---------------------------------------------

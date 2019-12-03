@@ -1,4 +1,4 @@
-// mod State
+//! A State monad implementation
 
 pub struct State<'a, S, A> { 
   pub run_state: Box<dyn 'a + Fn(S) -> (A, S)>, 

@@ -4,6 +4,7 @@
 ///
 /// You can use: 
 /// * ```pure return_expresion```    to return an expression value
+/// * ```monadic_expression```       to end with a monad expression
 /// * ```v <- pure return_expresion```  to lift a rhs expression value with Some(x)
 /// * ```v <- monadic_expression```  to use the monad result
 /// * ```&v <- &monadic_expression```  to use an item by ref from a by ref monad

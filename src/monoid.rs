@@ -1,4 +1,4 @@
-// mod monoid
+//! Semigroup and Monoid to use with Writer
 
 pub trait Semigroup {
 
