@@ -2,6 +2,7 @@
 
 * [A monad bloc macro based on Bind and Monad as supertraits of IntoIterator (iterables)](#mdo)
 * [A monad bloc macro based directly on IntoIterator and Iterator methods](#monadic)
+* [A Reader monad bloc macro](#rdrdo)
 * [A Writer monad bloc macro](#wrdo)
 * [A State monad bloc macro](#stdo)
 
@@ -137,6 +138,60 @@ fn main() {
 }
 
 ```
+### The Reader monad macro rdrdo! <a name="rdrdo" id="rdrdo"></a>
+
+A [Reader monad](https://wiki.haskell.org/All_About_Monads#The_Reader_monad) adaptation macro example
+
+```rust
+// examples/reader1
+use monadic::{rdrdo, reader::{Reader, ask}};
+use partial_application::partial;
+use std::collections::HashMap;
+
+type Env = HashMap<&'static str, i32>;
+
+fn my_ini_env() -> Env {
+   let mut dict = HashMap::new() ;
+   dict.insert( "a", 1i32);
+   dict
+}   
+
+fn immutable_add(k: &'static str, v: i32, dict: Env) -> Env {
+   let mut dict1 = dict.clone();
+   dict1.insert( k, v);
+   dict1
+}
+
+fn main() {
+
+  let my_env_to_env = partial!(immutable_add => "b", 2, _);
+  
+  let bloc: Reader<'_, Env, (Env, (i32, Env))>  = rdrdo!{
+  
+       env1 <- ask();
+       pair <- rdrdo!{ 
+               x <- pure 9;
+               y <- ask();
+               pure (x, y)
+             }.local( my_env_to_env) ;
+             
+       pure (env1.clone(), pair)      
+    };
+
+
+  let res = bloc.initial_env( my_ini_env() );
+
+  println!("result: {:?}", res);  
+}
+```
+Execution:
+
+```bash
+$ cargo run --example reader1
+
+result: ({"a": 1}, (9, {"a": 1, "b": 2}))
+```
+
 ### The Writer monad macro wrdo! <a name="wrdo" id="wrdo"></a>
 
 A [Writer monad](https://wiki.haskell.org/All_About_Monads#The_Writer_monad) adaptation macro example with String as logger, from examples/writer1.rs
