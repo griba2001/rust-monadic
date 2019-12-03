@@ -201,7 +201,7 @@ A [Writer monad](https://wiki.haskell.org/All_About_Monads#The_Writer_monad) ada
 //! by beginning with a `tell...` function within the macro `wrdo` 
 //! or by declaring it as the result type 
 //! where String is the default if omitted
-//! as in `let res : Writer< (i32, i32), String > = wrdo!{...}`
+//! as in `let res : Writer< _, String > = wrdo!{...}`
 
 #![allow(unused_imports)]
 
@@ -211,9 +211,9 @@ use partial_application::partial;
 
 fn main() {
     
-    let res = wrdo!{ 
+    let res : Writer< _, String> = wrdo!{ 
     
-        _ <- tell_str( "log1") ;   // either `tell(String::from("log1"))`
+        _ <- tell_str( "log1") ;   
         x <-  pure 1 ;
         let z = x+1;
         pure (x, z)
@@ -242,7 +242,7 @@ use partial_application::partial;
 
 fn main() {
 
-    let res = wrdo!{ 
+    let res : Writer< _, Vec<_>> = wrdo!{ 
     
         _ <- tell( vec![1,2,3]) ;
         x <- pure 1 ;
@@ -299,9 +299,8 @@ v. 0.3.12: example reader1 simplification.
 
 v. 0.3.11: suppressed  the form "&v <- ..." from Writer and State monads.
 
-v. 0.3.10: Added the Reader macro. It runs good over clonable environments e.g. HashMap.
-
-           The State macro has been updated, using a non static lifetime for the boxed closure
+v. 0.3.10: Added the Reader macro. It runs good over clonable environments e.g. HashMap. 
+The State macro has been updated, using a non static lifetime for the boxed closure
            
 v. 0.3.9: Added (<-) rhs `pure`.
 
