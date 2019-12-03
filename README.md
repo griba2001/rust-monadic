@@ -18,12 +18,13 @@ The traits **Bind** and **Monad** are defined in module *monad* as supertraits o
 
 You can use: 
 * to return an expression value: `pure return_expresion`
+* to end with a monadic expr.    `monadic_expression`
 * to use the monad result:       `v <- monadic_expression`
 * to ignore the monad result:    `_ <- monadic_expression`
 * to combine monad results:      `let z = expression`
 * to filter results:             `guard boolean_expression` 
 
-Note: *let*, within the macro, introduces an expression, not a block.
+Note: *let*, within the macro, introduces an expression, unlike Haskell.
 
 
 Example1: monadic comprehensions à la Haskell (file: examples/comprehension.rs)
@@ -44,7 +45,7 @@ fn main() {
                 };
         pure (x, z)
         
-    }.collect::<Vec<(_,_)>>();
+    }.collect::<Vec<_>>();
     
     println!("result: {:?}", xs); 
 }
@@ -71,7 +72,7 @@ fn main() {
         let z = x + 1 ;
         pure (x, z)
         
-    }.collect::<Vec<(_,_)>>();
+    }.collect::<Vec<_>>();
     
     println!("result: {:?}", xs); 
 }
@@ -291,6 +292,9 @@ result: ((9, 0, 1), 1)
 
 ```
 
-Added (<-) rhs `pure`.
+v. 0.3.10: Added the Reader macro. It runs good over clonable environments e.g. HashMap.
+           The State macro has been updated, using a non static lifetime for the boxed closure
+           
+v. 0.3.9: Added (<-) rhs `pure`.
 
 

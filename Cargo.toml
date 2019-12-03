@@ -1,7 +1,7 @@
 [package]
 name = "monadic"
 version = "0.3.10"
-authors = ["Gabriel Riba <griba2001@gmail.com>"]
+authors = ["Gabriel Riba Faura <griba2001@gmail.com>"]
 edition = "2018"
 license = "MIT"
 description = "macro to define Haskell style monadic action blocks"

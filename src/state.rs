@@ -1,18 +1,18 @@
 // mod State
 
-pub struct State<S, A> { 
-  pub run_state: Box<dyn Fn(S) -> (A, S)>, 
+pub struct State<'a, S, A> { 
+  pub run_state: Box<dyn 'a + Fn(S) -> (A, S)>, 
 }
 
-impl<S: Clone + 'static, A: Copy + 'static> State<S, A> {
+impl<'a, S: 'a + Clone, A: 'a + Clone> State<'a, S, A> {
 
   pub fn pure(x: A) -> Self {
-    State { run_state: Box::new( move |s: S| (x, s))}  // (s -> (a,s))
+    State { run_state: Box::new( move |s: S| (x.clone(), s))}  // (s -> (a,s))
   }
 
-  pub fn bind<B: 'static, F: 'static>(self, f: F) -> State<S, B> 
+  pub fn bind<B, F: 'a>(self, f: F) -> State<'a, S, B> 
     where
-      F: Fn(A) -> State<S, B>
+      F: Fn(A) -> State<'a, S, B>
   {
     State { run_state: Box::new( move |s: S| {
                   let (v, s1) = (*self.run_state) (s); // let (v,s') = runState self s
@@ -28,11 +28,11 @@ impl<S: Clone + 'static, A: Copy + 'static> State<S, A> {
   
 }
 
-pub fn get<S: Clone>() -> State<S, S> {
+pub fn get<'a, S: Clone>() -> State<'a, S, S> {
    State { run_state: Box::new( |s: S| (s.clone(), s))} 
 }
 
-pub fn put<S: Clone + 'static>( s: S) -> State<S, ()> {
+pub fn put<'a, S: Clone + 'static>( s: S) -> State<'a, S, ()> {
    State { run_state: Box::new( move |_| ( (), s.clone()) )} 
 }
 
@@ -53,8 +53,8 @@ macro_rules! stdo {
 
 use crate::monad::Monad;
 
-pub struct StateT<S, M: Monad, A> { 
-  pub run_state_t: Box<dyn Fn(S) -> M, where M::Item=(A,S) >, 
+pub struct StateT<'a, S, M: Monad, A> { 
+  pub run_state_t: Box<dyn 'a + Fn(S) -> M, where M::Item=(A,S) >, 
 }
 */
 
