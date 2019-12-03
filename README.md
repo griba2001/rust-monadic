@@ -293,7 +293,7 @@ result: ((9, 0, 1), 1)
 
 Changes:
 
-v. 0.3.13: added function `local_do`
+v. 0.3.13: added reader function `local_do`
 
 v. 0.3.12: example reader1 simplification.
 
