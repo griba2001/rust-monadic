@@ -1,4 +1,4 @@
-//! A Reader monad implementation
+// mod reader
 
 pub struct Reader<'a, E, A> { 
   pub run_reader: Box< dyn 'a + Fn(E) -> A>, 
@@ -43,8 +43,21 @@ pub fn ask<'a, E: Clone>() -> Reader<'a, E, E> {
   Reader { run_reader: Box::new(|e: E| e.clone())}
 }
 
+pub fn local_do<'a, E, A, F>(f: F, rdr: Reader<'a, E, A>) -> Reader<'a, E, A>
+     where
+       F: 'a + Fn(E) -> E,
+       E: 'a + Clone, 
+       A: 'static + Clone,
+  {
+
+    Reader { run_reader: 
+           Box::new(move |e: E| { (*rdr.run_reader) (f(e)) })
+        }
+  }
+
 #[macro_export]
 macro_rules! rdrdo {
+  // (rdrdo! $body:block) => [rdrdo!$body];
   (pure $e:expr                           ) => [Reader::pure($e)];
   (let $v:ident = $e:expr ; $($rest:tt)*) => [Reader::pure($e).bind( move |$v| { rdrdo!($($rest)*)} )];
   (_ <- $monad:expr ; $($rest:tt)* ) => [Reader::bind(($monad), move |_| { rdrdo!($($rest)*)} )];
@@ -52,5 +65,3 @@ macro_rules! rdrdo {
   ($v:ident <- $monad:expr ; $($rest:tt)* ) => [Reader::bind(($monad), move |$v| { rdrdo!($($rest)*)} )];
   ($monad:expr                            ) => [$monad];
 }
-
-
