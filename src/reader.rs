@@ -45,7 +45,6 @@ pub fn ask<'a, E: Clone>() -> Reader<'a, E, E> {
 
 #[macro_export]
 macro_rules! rdrdo {
-  // (rdrdo! $body:block) => [rdrdo!$body];
   (pure $e:expr                           ) => [Reader::pure($e)];
   (let $v:ident = $e:expr ; $($rest:tt)*) => [Reader::pure($e).bind( move |$v| { rdrdo!($($rest)*)} )];
   (_ <- $monad:expr ; $($rest:tt)* ) => [Reader::bind(($monad), move |_| { rdrdo!($($rest)*)} )];
