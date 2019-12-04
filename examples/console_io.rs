@@ -8,10 +8,13 @@ fn main() {
     
                 x <- pure 1;
                 let y = x + 1;
-                _ <- print_str("enter i32>");
+                
+                _ <- print_str("enter integer i32>");
                 _ <- stdout_flush();
+                
                 li1 <- read_line();
                 z <- li1.trim().parse::<i32>() ;
+                
                 pure (y, z, li1.clone())
                 
               }.collect::<Vec<_>>();

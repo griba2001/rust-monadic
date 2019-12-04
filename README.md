@@ -85,10 +85,10 @@ $ cargo run --example comprehension2
 result: [(1, 2), (3, 4)]
 ```
 
-Example: console io. There is a problem capturing string variables because String does not implement Copy, but it works using variables in the same closure, just in the line that follows.
+Example: console io. If you want to return String variables, you may do it through cloning
 
 ```rust
-// examples/console_io.rs
+// example console io
 
 use monadic::{mdo, monad::{Bind, Monad}, 
                    mio::{read_line, print_str, stdout_flush}};
@@ -98,16 +98,26 @@ fn main() {
     
                 x <- pure 1;
                 let y = x + 1;
-                _ <- print_str("enter i32>");
+                
+                _ <- print_str("enter integer i32>");
                 _ <- stdout_flush();
+                
                 li1 <- read_line();
                 z <- li1.trim().parse::<i32>() ;
-                pure (y, z)
+                
+                pure (y, z, li1.clone())
                 
               }.collect::<Vec<_>>();
 
     println!("result: {:?}", res);              
 }
+```
+```bash
+$ cargo run --example console_io
+
+enter integer i32>10
+result: [(2, 10, "10")]
+
 ```
 
 ### The Reader monad macro rdrdo! <a name="rdrdo" id="rdrdo"></a>
@@ -297,8 +307,9 @@ result: ((9, 0, 1), 1)
 ```
 
 Changes:
+v. 0.4.1: console_io example showing String return through cloning
 
-v 0. 4.0: 
+v. 0.4.0: 
 * renamed writer function `censor_do` as censor
 * added writer function listen() and listens()
 * renamed local_do() as local()
