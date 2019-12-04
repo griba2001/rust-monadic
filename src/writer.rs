@@ -107,11 +107,21 @@ pub fn tell_array<T: Clone>(v: &[T]) -> Writer<(), Vec<T>> {
         Writer{ run_writer: ((), Vec::from( v))}
     }
     
-pub fn censor_do<A, W: Monoid, F: Fn(W) -> W>(f: F, writer: Writer<A, W>) -> Writer<A, W> {
+pub fn censor<A, W: Monoid, F: Fn(W) -> W>(f: F, writer: Writer<A, W>) -> Writer<A, W> {
         let (a, w) = writer.run_writer;
         Writer{ run_writer: ((a,f), w)}.pass()
      }
-          
+     
+pub fn listen<A, W: Clone>(writer: Writer<A, W>) -> Writer<(A, W), W> {
+    let (a, w) = writer.run_writer;
+    Writer{ run_writer: ((a, (&w).clone()), w)}
+}
+
+pub fn listens<A, W: Clone, T, F: Fn(W) -> T>( f: F, writer: Writer<A, W>) -> Writer<(A, T), W> {
+    let (a, w) = writer.run_writer;
+    Writer{ run_writer: ((a, f( (&w).clone())), w)}
+}
+
     
 /// Macro for a [Writer monad](https://wiki.haskell.org/All_About_Monads#The_Writer_monad)
 ///
