@@ -1,5 +1,10 @@
-// examples/reader1
-use monadic::{rdrdo, reader::{Reader, ask, local_do}};
+//! examples/reader1
+//!
+//! You must specify in a type restriction the type of the environment of the Reader bloc
+//!
+//! `local` can be used as a function or as a method
+
+use monadic::{rdrdo, reader::{Reader, ask, local}};
 use partial_application::partial;
 use std::collections::HashMap;
 
@@ -18,22 +23,25 @@ fn my_initial_env() -> Env {
 
 fn main() {
 
-  let my_env_to_env = partial!(immutable_add => "b", 2, _);
+  let modify_env = partial!(immutable_add => "b", 2, _);
   
-  let bloc: Reader<'_, Env, _>  = rdrdo!{
+  let bloc1: Reader<'_, Env, _>  = rdrdo!{
   
        env1 <- ask();
-       pair <- local_do( my_env_to_env, rdrdo!{
+       
+       // run a subbloc with a modified environment
+       pair <- local( modify_env, rdrdo!{ 
        
                x <- pure 9;
                y <- ask();
                pure (x, y)
              }) ;
-       pure (env1.clone(), pair)      
+             
+       pure (env1.clone(), pair.0, pair.1)      
     };
 
 
-  let res = bloc.initial_env( my_initial_env() );
+  let res = bloc1.initial_env( my_initial_env() );
 
   println!("result: {:?}", res);  
 }

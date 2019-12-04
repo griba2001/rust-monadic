@@ -43,7 +43,7 @@ pub fn ask<'a, E: Clone>() -> Reader<'a, E, E> {
   Reader { run_reader: Box::new(|e: E| e.clone())}
 }
 
-pub fn local_do<'a, E, A, F>(f: F, rdr: Reader<'a, E, A>) -> Reader<'a, E, A>
+pub fn local<'a, E, A, F>(f: F, rdr: Reader<'a, E, A>) -> Reader<'a, E, A>
      where
        F: 'a + Fn(E) -> E,
        E: 'a + Clone, 
