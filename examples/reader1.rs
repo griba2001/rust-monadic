@@ -10,20 +10,20 @@ use std::collections::HashMap;
 
 type Env = HashMap<String, i32>;
 
-fn immutable_add( k_slice: &str, v: i32, dict: Env) -> Env {
+fn immutable_insert( k_slice: &str, v: i32, dict: Env) -> Env {
    let mut dict1 = dict.clone();
    dict1.insert( String::from(k_slice), v);
    dict1
 }
 
 fn my_initial_env() -> Env {
-   immutable_add( "a", 1, HashMap::new())
+   immutable_insert( "a", 1, HashMap::new())
 }   
 
 
 fn main() {
 
-  let modify_env = partial!(immutable_add => "b", 2, _);
+  let modify_env = partial!(immutable_insert => "b", 2, _);
   
   let bloc1: Reader<'_, Env, _>  = rdrdo!{
   
