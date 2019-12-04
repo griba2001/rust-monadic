@@ -60,7 +60,6 @@
 //! ```
 
 pub mod monad;
-pub mod intoiter;
 pub mod monoid;
 pub mod reader;
 pub mod writer;
