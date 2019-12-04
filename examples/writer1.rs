@@ -9,7 +9,7 @@
 //! `censor(), listen() and listens()` can be used as functions or as methods of a Writer bloc
 
 #[allow(unused_imports)]
-use monadic::{wrdo, writer::{Writer, tell, tell_str, censor}};
+use monadic::{wrdo, writer::{Writer, tell, tell_str, censor, listen}};
 use monadic::util::concat_string_str;
 use partial_application::partial;
 
@@ -21,12 +21,10 @@ fn main() {
     
         _ <- tell_str( "log1") ;
         
-        // run a subbloc with a modified log
+        // run a subbloc and modify the log afterwards
         censor( modify_log,
                    wrdo!{
-                        x <-  pure 1 ;
-                        let z = x+1;
-                        pure (x, z)
+                        listen( Writer::pure( 2))
                     })
         }.listen() ;
     
