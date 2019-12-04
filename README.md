@@ -1,7 +1,6 @@
 # rust-monadic
 
 * [A monad bloc macro based on Bind and Monad as supertraits of IntoIterator (iterables)](#mdo)
-* [A monad bloc macro based directly on IntoIterator and Iterator methods](#monadic)
 * [A Reader monad bloc macro](#rdrdo)
 * [A Writer monad bloc macro](#wrdo)
 * [A State monad bloc macro](#stdo)
@@ -91,7 +90,8 @@ Example: console io. There is a problem capturing string variables because Strin
 ```rust
 // examples/console_io.rs
 
-use monadic::{mdo, monad::{Bind, Monad}, mio::{read_line, print_str, stdout_flush}};
+use monadic::{mdo, monad::{Bind, Monad}, 
+                   mio::{read_line, print_str, stdout_flush}};
 
 fn main() {
     let res =mdo!{
@@ -110,76 +110,55 @@ fn main() {
 }
 ```
 
-### The original macro monadic! <a name="monadic" id="monadic"></a>
-
-Same functionality as *mdo* using `IntoIterator` and `Iterator` methods directly, avoiding intermixed `Bind` and `Monad` traits definitions.
-
-Here is example1 using it:
-
-```rust
-use monadic::monadic;
-use num::Integer;
-
-fn main() {
-    let xs = monadic!{ 
-    
-        x <- 1..7;
-        y <- 1..x;
-        guard (&y).is_odd() ;
-        let z = match x.is_even() { 
-                    true => &y + 1,
-                    _ => &y - 1,
-                };
-        w <- pure 5;        // (<-) rhs pure
-        pure (x, z, w)
-        
-    }.collect::<Vec<_>>();
-    
-    println!("result: {:?}", xs); 
-}
-
-```
 ### The Reader monad macro rdrdo! <a name="rdrdo" id="rdrdo"></a>
 
 A [Reader monad](https://wiki.haskell.org/All_About_Monads#The_Reader_monad) adaptation macro example
 
 ```rust
-// examples/reader1
-use monadic::{rdrdo, reader::{Reader, ask, local_do}};
+//! examples/reader1
+//!
+//! You must specify in a type restriction the type of the environment of the Reader bloc
+//!
+//! `local` can be used as a function or as a method
+
+use monadic::{rdrdo, reader::{Reader, ask, local}};
 use partial_application::partial;
 use std::collections::HashMap;
 
 type Env = HashMap<String, i32>;
 
-fn immutable_add( k_slice: &str, v: i32, dict: Env) -> Env {
+fn immutable_insert( k_slice: &str, v: i32, dict: Env) -> Env {
    let mut dict1 = dict.clone();
    dict1.insert( String::from(k_slice), v);
    dict1
 }
 
 fn my_initial_env() -> Env {
-   immutable_add( "a", 1, HashMap::new())
+   immutable_insert( "a", 1, HashMap::new())
 }   
 
 
 fn main() {
 
-  let my_env_to_env = partial!(immutable_add => "b", 2, _);
+  let modify_env = partial!(immutable_insert => "b", 2, _);
   
-  let bloc: Reader<'_, Env, _>  = rdrdo!{
+  let bloc1: Reader<'_, Env, _>  = rdrdo!{
   
        env1 <- ask();
-       pair <- local_do( my_env_to_env, rdrdo!{
+       
+       // run a subbloc with a modified environment
+       pair <- local( modify_env, rdrdo!{ 
        
                x <- pure 9;
                y <- ask();
                pure (x, y)
              }) ;
-       pure (env1.clone(), pair)      
+             
+       pure (env1.clone(), pair.0, pair.1)      
     };
 
 
-  let res = bloc.initial_env( my_initial_env() );
+  let res = bloc1.initial_env( my_initial_env() );
 
   println!("result: {:?}", res);  
 }
@@ -189,7 +168,7 @@ Execution:
 ```bash
 $ cargo run --example reader1
 
-result: ({"a": 1}, (9, {"a": 1, "b": 2}))
+result: ({"a": 1}, 9, {"b": 2, "a": 1})
 ```
 
 ### The Writer monad macro wrdo! <a name="wrdo" id="wrdo"></a>
@@ -197,28 +176,33 @@ result: ({"a": 1}, (9, {"a": 1, "b": 2}))
 A [Writer monad](https://wiki.haskell.org/All_About_Monads#The_Writer_monad) adaptation macro example with String as logger, from examples/writer1.rs
 
 ```rust
+//! examples/writer1.rs
+//!
 //! you may set the logger type 
 //! by beginning with a `tell...` function within the macro `wrdo` 
 //! or by declaring it as the result type 
 //! where String is the default if omitted
 //! as in `let res : Writer< _, String > = wrdo!{...}`
+//!
+//! `censor(), listen() and listens()` can be used as functions or as methods of a Writer bloc
 
-#![allow(unused_imports)]
-
-use monadic::{wrdo, writer::{Writer, tell, tell_str, censor_do}};
+#[allow(unused_imports)]
+use monadic::{wrdo, writer::{Writer, tell, tell_str, censor, listen}};
 use monadic::util::concat_string_str;
 use partial_application::partial;
 
 fn main() {
     
+    let modify_log = partial!( concat_string_str => _, "log2");
+    
     let res : Writer< _, String> = wrdo!{ 
     
         _ <- tell_str( "log1") ;
-        censor_do( partial!( concat_string_str => _, "log2"),
+        
+        // run a subbloc and modify the log afterwards
+        censor( modify_log,
                    wrdo!{
-                        x <-  pure 1 ;
-                        let z = x+1;
-                        pure (x, z)
+                        listen( Writer::pure( 2))
                     })
         }.listen() ;
     
@@ -230,27 +214,39 @@ Exec:
 ```bash
 $ cargo run --example writer1
 
-result: ((1, 2), "log1log2")
+result: ((2, ""), "log1log2")
 
 ```
 Example 2 with Vec as logger from examples/writer2.rs
 
 ```rust
-use monadic::{wrdo, writer::{Writer, tell, censor_do}};
+//! examples/writer2.rs
+//! 
+//! you may set the logger type 
+//! by beginning with a `tell...` function within the macro `wrdo` 
+//! or by declaring it as the result type 
+//! where String is the default if omitted
+//! as in `let res : Writer< _, Vec<_> > = wrdo!{...}`
+//!
+//! `censor(), listen() and listens()` can be used as functions or as methods of a Writer bloc
+
+use monadic::{wrdo, writer::{Writer, tell, censor, listen}};
 use monadic::util::concat_vec_array;
 use partial_application::partial;
 
 
 fn main() {
 
+    let modify_log = partial!( concat_vec_array => _, &[4,5,6]);
+    
     let res : Writer< _, Vec<_>> = wrdo!{ 
     
         _ <- tell( vec![1,2,3]) ;
-        censor_do( partial!( concat_vec_array => _, &[4,5,6]),
+        
+        // run a subbloc and modify the log afterwards
+        censor( modify_log,
                    wrdo!{
-                        x <-  pure 1 ;
-                        let z = x+1;
-                        pure (x, z)
+                        listen( Writer::pure( 2))
                     })
         }.listen() ;
     
@@ -261,7 +257,7 @@ fn main() {
 ```bash
 $ cargo run --example writer2
 
-result: ((1, 2), [1, 2, 3, 4, 5, 6])
+result: ((2, []), [1, 2, 3, 4, 5, 6])
 
 ```
 ### The State monad macro stdo! <a name="stdo" id="stdo"></a>
@@ -269,10 +265,15 @@ result: ((1, 2), [1, 2, 3, 4, 5, 6])
 A [State monad](https://wiki.haskell.org/All_About_Monads#The_State_monad) adaptation macro example from examples/state1.rs
 
 ```rust
+//! examples/state1.rs
+//!
+//! You may specify in a type restriction the type of the State bloc
+//! or apply it directly to an initial_state without the type restriction
+
 use monadic::{stdo, state::{State, get, put}};
 
 fn main() {
-  let res = stdo!{
+  let bloc: State<'_, i32, _> = stdo!{
   
        x <- pure 9;
        y <- get();
@@ -280,7 +281,9 @@ fn main() {
        z <- get(); 
        pure (x, y, z) 
        
-    }.initial_state( 0);
+    };
+    
+  let res = bloc.initial_state(0);  
 
   println!("result: {:?}", res);  
 }
@@ -294,6 +297,12 @@ result: ((9, 0, 1), 1)
 ```
 
 Changes:
+
+v 0. 4.0: 
+* renamed writer function `censor_do` as censor
+* added writer function listen() and listens()
+* renamed local_do() as local()
+* removed intoiter module as it duplicates functionality without added applicability, use module monad's `mdo` macro instead
 
 v. 0.3.14: added writer function `censor_do`
 
