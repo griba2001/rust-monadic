@@ -1,6 +1,7 @@
 // example console io
 
-use monadic::{mdo, monad::{Bind, Monad}, mio::{read_line, print_str, stdout_flush}};
+use monadic::{mdo, monad::{Bind, Monad}, 
+                   mio::{read_line, print_str, stdout_flush}};
 
 fn main() {
     let res =mdo!{
@@ -11,7 +12,7 @@ fn main() {
                 _ <- stdout_flush();
                 li1 <- read_line();
                 z <- li1.trim().parse::<i32>() ;
-                pure (y, z)
+                pure (y, z, li1.clone())
                 
               }.collect::<Vec<_>>();
 
