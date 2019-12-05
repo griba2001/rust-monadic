@@ -15,15 +15,18 @@ Each step monad expression is [flat_mapped](https://doc.rust-lang.org/std/iter/t
 
 The traits **Bind** and **Monad** are defined in module *monad* as supertraits of IntoIterator.
 
-You can use: 
-* to return an expression value: `pure return_expresion`
-* to end with a monadic expr.    `monadic_expression`
-* to use the monad result:       `v <- monadic_expression`
-* to ignore the monad result:    `_ <- monadic_expression`
-* to combine monad results:      `let z = expression`
-* to filter results:             `guard boolean_expression` 
+Here is a table where a **monadic_expression** is one of a type instance of IntoIterator: 
 
-Note: *let*, within the macro, introduces an expression, unlike Haskell.
+<table>
+<tr><td>* to return an expression value:</td> <th>`pure return_expresion`</th></tr>
+<tr><td>* to end with a monadic expr.:</td> <th>`monadic_expression`</th></tr>
+<tr><td>* to use the monad result:</td> <th>``v <- monadic_expression`</th></tr>
+<tr><td>* to ignore the monad result:</td> <th>`_ <- monadic_expression`</th></tr>
+<tr><td>* to combine monad results:</td> <th>`pure return_expresion`</th></tr>
+<tr><td>* to filter results:</td> <th>`guard boolean_expression`</th></tr>
+</table>
+
+Note: *let*, within the macro, introduces an expression, not a Haskell block.
 
 
 Example1: monadic comprehensions à la Haskell (file: examples/comprehension.rs)
@@ -66,7 +69,7 @@ use num::Integer;
 fn main() {
     let xs = mdo!{ 
     
-        &x <- &vec![1,2,3,4];   // with item refs (&x) in the lambda argument position
+        &x <- &vec![1,2,3,4];   // with item ref pattern (&x) in the lambda argument position
         guard x.is_odd() ;
         let z = x + 1 ;
         pure (x, z)
@@ -305,8 +308,28 @@ $ cargo run --example state1
 result: ((9, 0, 1), 1)
 
 ```
+Some tests:
+
+```bash
+$ cargo test
+running 10 tests
+test monad::tests::prop_monad_comprehension_vs_iteration ... ok
+test monad::tests::prop_option_mplus_associative ... ok
+test monad::tests::prop_option_mplus_left_catch ... ok
+test monad::tests::prop_option_mplus_left_identity ... ok
+test monad::tests::prop_option_mplus_left_zero ... ok
+test monad::tests::prop_option_mplus_right_identity ... ok
+test monad::tests::prop_vec_mplus_associative ... ok
+test monad::tests::prop_vec_mplus_left_identity ... ok
+test monad::tests::prop_vec_mplus_left_distribution ... ok
+test monad::tests::prop_vec_mplus_right_identity ... ok
+
+test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out
+```
 
 Changes:
+v. 0.4.2: added MonadPlus with **quickcheck** tests
+
 v. 0.4.1: console_io example showing String return through cloning
 
 v. 0.4.0: 
