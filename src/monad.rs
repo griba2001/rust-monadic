@@ -74,10 +74,12 @@ impl<T> Monad for VecDeque<T>{
    }
 }
 
+// experimental
 pub trait MonadPlus: Monad {
    fn mzero() -> Self;
    fn mplus(&self, _:&Self) -> Self;
 }
+
 
 impl<T:Clone> MonadPlus for Option<T> {
 
@@ -238,10 +240,10 @@ mod tests {
         fn prop_vec_mplus_left_distribution(a: Vec<i32>, 
                                           b: Vec<i32>) -> bool {
            let k = |&i: &i32| Vec::pure(i);                               
-           let x = (&a).bind( k).collect::<Vec<_>>();
-           let y = (&b).bind( k).collect::<Vec<_>>();
-           let z = (&a).mplus(&b);
-           (&z).bind( k).collect::<Vec<_>>() == (&x).mplus(&y)
+           let ak = (&a).bind( k).collect::<Vec<_>>();
+           let bk = (&b).bind( k).collect::<Vec<_>>();
+           let abk = (&(&a).mplus(&b)).bind( k).collect::<Vec<_>>();
+           abk == (&ak).mplus(&bk)
         }
     }
 }
