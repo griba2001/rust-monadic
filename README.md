@@ -13,20 +13,23 @@ for [**IntoIterator**](https://doc.rust-lang.org/std/iter/trait.IntoIterator.htm
 
 Each step monad expression is [flat_mapped](https://doc.rust-lang.org/std/iter/trait.Iterator.html#method.flat_map) with the rest into a lazy *FlatMap* expression which implements *IntoIterator* with lambdas as [*move* closures](https://doc.rust-lang.org/1.30.0/book/first-edition/closures.html#move-closures) capturing the environment and argument. The lambda body will be recursively parsed as monadic, and its type should also be an instance of *IntoIterator*.
 
+Aside from the types that implement *IntoIterator*, all iterators also do it as [documented](https://doc.rust-lang.org/stable/core/iter/#for-loops-and-intoiterator).
+
 The traits **Bind** and **Monad** are defined in module *monad* as supertraits of IntoIterator.
 
-Here is a table where a **monadic_expression** is one of a type instance of IntoIterator: 
+Here is a table where a **monadic_expression** is one of a type which must be instance of IntoIterator: 
 
 <table>
 <tr><td>* to return an expression value:</td> <th>`pure return_expresion`</th></tr>
 <tr><td>* to end with a monadic expr.:</td> <th>`monadic_expression`</th></tr>
-<tr><td>* to use the monad result:</td> <th>``v <- monadic_expression`</th></tr>
+<tr><td>* to use the monad result:</td> <th>`v <- monadic_expression`</th></tr>
+<tr><td>* to lift a value and bind it:</td> <th>`v <- pure expression`</th></tr>
 <tr><td>* to ignore the monad result:</td> <th>`_ <- monadic_expression`</th></tr>
-<tr><td>* to combine monad results:</td> <th>`pure return_expresion`</th></tr>
+<tr><td>* to combine monad results:</td> <th>`let z = expression`</th></tr>
 <tr><td>* to filter results:</td> <th>`guard boolean_expression`</th></tr>
 </table>
 
-Note: *let*, within the macro, introduces an expression, not a Haskell block.
+Note: *let*, within the macro, introduces only one binding.
 
 
 Example1: monadic comprehensions à la Haskell (file: examples/comprehension.rs)
@@ -328,6 +331,9 @@ test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out
 ```
 
 Changes:
+
+v. 0.4.3: readme typos.
+
 v. 0.4.2: added MonadPlus with **quickcheck** tests
 
 v. 0.4.1: console_io example showing String return through cloning
