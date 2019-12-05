@@ -19,7 +19,7 @@
 //!
 //! Iterator and IntoIterator trait imports are [predefined](https://doc.rust-lang.org/std/prelude/index.html#prelude-contents)
 //!
-//! ```
+//! ```no_run
 //! # #[macro_use] extern crate monadic;
 //! use num::Integer;
 //! use monadic::{mdo, monad::{Bind, Monad}};
@@ -66,5 +66,3 @@ pub mod writer;
 pub mod util;
 pub mod state;
 pub mod mio;
-
-
