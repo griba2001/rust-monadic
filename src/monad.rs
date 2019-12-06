@@ -74,64 +74,9 @@ impl<T> Monad for VecDeque<T>{
    }
 }
 
-// experimental
-pub trait MonadPlus: Monad {
-   fn mzero() -> Self;
-   fn mplus(&self, _:&Self) -> Self;
-}
 
 
-impl<T:Clone> MonadPlus for Option<T> {
-
-   fn mzero() -> Self {None}
-   
-   fn mplus(&self, b:&Self) -> Self {
-      match (self, *(&b)) {
-        (Some(_), Some(_)) => self.clone(),
-        (None, _) => b.clone(),
-        (_, None) => self.clone(),
-      }
-   }
-}
-
-impl<T:Clone> MonadPlus for Vec<T> {
-
-   fn mzero() -> Self { Self::new() }
-   
-   fn mplus(&self, b:&Self) -> Self {
-   
-      let mut c = self.clone();
-      c.append( &mut b.clone());
-      c
-   }
-}
-
-impl<T:Clone> MonadPlus for LinkedList<T> {
-
-   fn mzero() -> Self { Self::new() }
-   
-   fn mplus(&self, b:&Self) -> Self {
-   
-      let mut c = self.clone();
-      c.append( &mut b.clone());
-      c
-   }
-}
-
-impl<T:Clone> MonadPlus for VecDeque<T> {
-
-   fn mzero() -> Self { Self::new() }
-   
-   fn mplus(&self, b:&Self) -> Self {
-   
-      let mut c = self.clone();
-      c.append( &mut b.clone());
-      c
-   }
-}
-
-
-/// Macro based on Bind and Monad traits as supertraits of IntoIterator
+/// Macro based on MonadPlus supertrait of crate::monad::Monad based on IntoIterator.
 ///
 /// You can use: 
 /// * `pure return_expresion`    to return an expression value
@@ -142,13 +87,6 @@ impl<T:Clone> MonadPlus for VecDeque<T> {
 /// * `_ <- monadic_expression`  to ignore the monad result
 /// * `let z = expression`       to combine monad results
 /// * `guard boolean_expression` to filter results
-///
-/// There are transitive implementation relations for some structures to be instances of IntoIterator that only implement Iterator: 
-///
-/// All iterators implement IntoIterator where into_iter() returns the self iterator structure
-/// as [documented](https://doc.rust-lang.org/stable/core/iter/#for-loops-and-intoiterator) 
-///
-/// Iterator and IntoIterator trait imports are [predefined](https://doc.rust-lang.org/std/prelude/index.html#prelude-contents)
 ///
 #[macro_export]
 macro_rules! mdo {
@@ -164,24 +102,8 @@ macro_rules! mdo {
 
 #[cfg(test)]
 mod tests {
-    use crate::monad::{Bind, Monad, MonadPlus};
+    use crate::monad::{Bind, Monad};
     use quickcheck::quickcheck;
-    
-    fn vec2option<T: Clone>( xs: Vec<T>) -> Option<T> {
-        match &xs.len() {
-          0 => None,
-          1 => Some( xs[0].clone()),
-          _ => panic!("vec2option: unexpectedly long vec"),
-        }
-    }
-
-    #[test]
-    fn prop_option_mplus_left_zero() {
-    
-        let z = Option::<i32>::mzero();
-        let vs = (&z).bind( |&i: &i32| Some(i)).collect::<Vec<_>>();
-        assert_eq!( vec2option(vs), z);
-    }
     
     quickcheck!{
         fn prop_monad_comprehension_vs_iteration( xs: Vec<i32>) -> bool {
@@ -198,53 +120,6 @@ mod tests {
             
             ys == zs
         }
-        
-        fn prop_option_mplus_left_identity(a: Option<i32>) -> bool {
-            Option::mzero().mplus(&a) == a
-        }
-        
-        fn prop_option_mplus_right_identity(a: Option<i32>) -> bool {
-            Option::mplus(&a, &Option::mzero()) == a
-        }
-        
-        fn prop_option_mplus_associative( a: Option<i32>, 
-                                          b: Option<i32>, 
-                                          c: Option<i32>) -> bool {
-           let ab = Option::mplus(&a, &b);
-           let bc = Option::mplus(&b, &c);
-           ab.mplus(&c) == (&a).mplus(&bc)
-        }
-        
-        fn prop_option_mplus_left_catch(x: i32, 
-                                        b: Option<i32>) -> bool {
-           let a = Option::pure(x);
-           (&a).mplus( &b) == a
-        }
-        
-        fn prop_vec_mplus_left_identity(a: Vec<i32>) -> bool {
-            Vec::mzero().mplus(&a) == a
-        }
-        
-        fn prop_vec_mplus_right_identity(a: Vec<i32>) -> bool {
-            Vec::mplus(&a, &Vec::mzero()) == a
-        }
-        
-        fn prop_vec_mplus_associative( a: Vec<i32>, 
-                                          b: Vec<i32>, 
-                                          c: Vec<i32>) -> bool {
-           let ab = Vec::mplus(&a, &b);
-           let bc = Vec::mplus(&b, &c);
-           ab.mplus(&c) == (&a).mplus(&bc)
-        }
-        
-        fn prop_vec_mplus_left_distribution(a: Vec<i32>, 
-                                          b: Vec<i32>) -> bool {
-           let k = |&i: &i32| Vec::pure(i);                               
-           let ak = (&a).bind( k).collect::<Vec<_>>();
-           let bk = (&b).bind( k).collect::<Vec<_>>();
-           let abk = (&(&a).mplus(&b)).bind( k).collect::<Vec<_>>();
-           abk == (&ak).mplus(&bk)
-        }
-    }
+    }    
 }
 

@@ -22,7 +22,8 @@ Here is a table where a **monadic_expression** is one of a type which must be in
 <table>
 <tr><td>* to return an expression value:</td> <th>`pure return_expresion`</th></tr>
 <tr><td>* to end with a monadic expr.:</td> <th>`monadic_expression`</th></tr>
-<tr><td>* to use the monad result:</td> <th>`v <- monadic_expression`</th></tr>
+<tr><td>* to bind the monad result:</td> <th>`v <- monadic_expression`</th></tr>
+<tr><td>* to bind by ref. a by ref. container:</td> <th>`&v <- &container`</th></tr>
 <tr><td>* to lift a value and bind it:</td> <th>`v <- pure expression`</th></tr>
 <tr><td>* to ignore the monad result:</td> <th>`_ <- monadic_expression`</th></tr>
 <tr><td>* to combine monad results:</td> <th>`let z = expression`</th></tr>
@@ -315,22 +316,15 @@ Some tests:
 
 ```bash
 $ cargo test
-running 10 tests
+running 1 test
 test monad::tests::prop_monad_comprehension_vs_iteration ... ok
-test monad::tests::prop_option_mplus_associative ... ok
-test monad::tests::prop_option_mplus_left_catch ... ok
-test monad::tests::prop_option_mplus_left_identity ... ok
-test monad::tests::prop_option_mplus_left_zero ... ok
-test monad::tests::prop_option_mplus_right_identity ... ok
-test monad::tests::prop_vec_mplus_associative ... ok
-test monad::tests::prop_vec_mplus_left_identity ... ok
-test monad::tests::prop_vec_mplus_left_distribution ... ok
-test monad::tests::prop_vec_mplus_right_identity ... ok
 
-test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out
 ```
 
 Changes:
+
+v. 0.4.4: doc cleaning of old intoiter macro refs. Suppressed experimental MonadPlus, which is not ready.
 
 v. 0.4.3: readme typos.
 
