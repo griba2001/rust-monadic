@@ -24,8 +24,6 @@
 //! use num::Integer;
 //! use monadic::{mdo, monad::{Bind, Monad}};
 //!
-//! // alternatively you may use monadic::monadic; the macro without interpositions.
-//!
 //! # fn main() {
 //!    // available in examples/comprehension.rs
 //!
