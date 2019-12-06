@@ -83,7 +83,7 @@ impl<T> Monad for VecDeque<T>{
 /// * `monadic_expression`       to end with a monad expression
 /// * `v <- pure return_expresion`  to lift a rhs expression value with Option::pure(x)
 /// * `v <- monadic_expression`  to use the monad result
-/// * `&v <- &monadic_expression`  to use a reference item result from a by reference monad
+/// * `&v <- &container`  to use a reference item result from a by reference container
 /// * `_ <- monadic_expression`  to ignore the monad result
 /// * `let z = expression`       to combine monad results
 /// * `guard boolean_expression` to filter results

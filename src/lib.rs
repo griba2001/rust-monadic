@@ -1,16 +1,12 @@
 //!
-//! Haskell style block macros "mdo" and "monadic"
+//! Haskell style block macros "mdo"
 //! where monad sources should be expressions of type instances of IntoIterator.
 //!
-//! Each monad expression is flat_mapped with the lambda expression having the monad result variable as argument and the rest as its body,
+//! Each monad expression is flat_mapped (`into_iter().flat_map( lambda)`) 
+//! with the lambda expression having the monad result variable as argument and the rest as its body,
 //! into a lazy FlatMap expression that is also an instance of IntoIterator, and can be collected into any instance of FromIterator.
 //!
-//! The macro "mdo" (module `monad`) uses the traits Bind (IntoIterator supertrait) and Monad (Bind supertrait) defined there.
-//!
-//! The macro "monadic" (module `intoiter`) uses IntoIterator into_iter() without interpositions.
-//!
-//! To use `pure` to lift a value, it has to be typed by a monad implementation, 
-//! being Option::pure(x) the least costly option, or just Some(x).
+//! To use "mdo" (module `monad`) you must import the traits Bind and Monad defined there.
 //!
 //! There are transitive implementation relations for some structures to be instances of IntoIterator:
 //!
@@ -18,6 +14,10 @@
 //! as [documented](https://doc.rust-lang.org/stable/core/iter/#for-loops-and-intoiterator) 
 //!
 //! Iterator and IntoIterator trait imports are [predefined](https://doc.rust-lang.org/std/prelude/index.html#prelude-contents)
+//!
+//! There are also Reader, Writer and State monads in their respective modules with their own macros.
+//! 
+//! There is no common behaviour macro by now, as trying to build transformers hits rust language cornerstones.
 //!
 //! ```no_run
 //! # #[macro_use] extern crate monadic;
