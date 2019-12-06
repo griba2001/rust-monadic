@@ -76,8 +76,6 @@ impl<T> Monad for VecDeque<T>{
 
 
 
-/// Macro based on MonadPlus supertrait of crate::monad::Monad based on IntoIterator.
-///
 /// You can use: 
 /// * `pure return_expresion`    to return an expression value
 /// * `monadic_expression`       to end with a monad expression

@@ -324,6 +324,8 @@ test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out
 
 Changes:
 
+v. 0.4.5: doc cleaning
+
 v. 0.4.4: doc cleaning of old intoiter macro refs. Suppressed experimental MonadPlus, which is not ready.
 
 v. 0.4.3: readme typos.
