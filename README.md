@@ -2,10 +2,12 @@
 
 * [A monad bloc macro based on Bind and Monad as supertraits of IntoIterator (iterables)](#mdo)
 * [A Reader monad bloc macro](#rdrdo)
+* [A ReaderT monad transformer bloc macro](#rdrt_mdo)
 * [A Writer monad bloc macro](#wrdo)
 * [A State monad bloc macro](#stdo)
 
-### The macro mdo! <a name="mdo" id="mdo"></a>
+<a name="mdo" id="mdo"></a>
+### The macro mdo! 
 
 A macro to write Haskell style monadic code
 
@@ -127,7 +129,8 @@ result: [(2, 10, "10")]
 
 ```
 
-### The Reader monad macro rdrdo! <a name="rdrdo" id="rdrdo"></a>
+<a name="rdrdo" id="rdrdo"></a>
+### The Reader monad macro rdrdo! 
 
 A [Reader monad](https://wiki.haskell.org/All_About_Monads#The_Reader_monad) adaptation macro example
 
@@ -187,8 +190,82 @@ $ cargo run --example reader1
 
 result: ({"a": 1}, 9, {"b": 2, "a": 1})
 ```
+<a name="rdrt_mdo" id="rdrt_mdo"></a>
+### The ReaderT monad transformer macro rdrt_mdo! 
 
-### The Writer monad macro wrdo! <a name="wrdo" id="wrdo"></a>
+This monad transformer works only for monads that implement FromIterator, such as Vec, LinkedList and VecDeque.
+
+This macro requires more type annotations.
+
+Let bindings are not supported here. Instead you can use
+
+    v <- lift vec![expression]
+
+Example:
+```rust
+// examples/reader_trans1
+
+#[allow(unused_imports)]
+use monadic::{rdrt_mdo, monad::{Monad}, 
+              reader_trans::{ReaderT, lift, ask, local}};
+use num::Integer;
+use partial_application::partial;
+use std::collections::HashMap;
+
+type Env = HashMap<String, i32>;
+
+fn immutable_insert( k_slice: &str, v: i32, dict: Env) -> Env {
+   let mut dict1 = dict.clone();
+   dict1.insert( String::from(k_slice), v);
+   dict1
+}
+
+fn my_initial_env() -> Env {
+   immutable_insert( "a", 1, HashMap::new())
+}   
+
+fn main() {
+  let modify_env = partial!(immutable_insert => "b", 2, _);
+
+  // example with Vec as the nested monad
+  
+  let bloc = rdrt_mdo!{   // possible type restriction as ReaderT<'_, Env, Vec<_>>
+  
+       env1 <- ask() as ReaderT<'_, Env, Vec<Env>>;
+       pair <- local( modify_env, rdrt_mdo!{
+       
+               x <- lift (5..9).collect::<Vec<i32>>();
+               guard x.is_odd();
+               
+               y <- ask() as ReaderT<'_, Env, Vec<Env>>;
+               
+               // this acts as a typed `pure` specifying the monad type
+               
+               lift Vec::pure((x, y))   
+             }) ;
+             
+       // reader type restriction unnecessary ending with lift instead of pure
+       
+       lift Vec::pure((env1.clone(), pair.0, pair.1))      
+    };
+
+  // applying the initial_env() returns the nested monad structure
+  
+  let res = bloc.initial_env( my_initial_env() );
+
+  println!("result: {:?}", res);  
+}
+```
+Execution:
+
+```bash
+$ cargo run --example reader_trans1
+
+result: [({"a": 1}, 5, {"a": 1, "b": 2}), ({"a": 1}, 7, {"a": 1, "b": 2})]
+```
+
+<a name="wrdo" id="wrdo"></a>
+### The Writer monad macro wrdo! 
 
 A [Writer monad](https://wiki.haskell.org/All_About_Monads#The_Writer_monad) adaptation macro example with String as logger, from examples/writer1.rs
 
@@ -277,7 +354,8 @@ $ cargo run --example writer2
 result: ((2, []), [1, 2, 3, 4, 5, 6])
 
 ```
-### The State monad macro stdo! <a name="stdo" id="stdo"></a>
+<a name="stdo" id="stdo"></a>
+### The State monad macro stdo! 
 
 A [State monad](https://wiki.haskell.org/All_About_Monads#The_State_monad) adaptation macro example from examples/state1.rs
 
@@ -323,6 +401,8 @@ test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out
 ```
 
 Changes:
+
+v. 0.4.7: added the ReaderT transformer for monads that implement FromIterator (Vec, LinkedList, VecDeque)
 
 v. 0.4.5 and 0.4.6: doc cleaning
 

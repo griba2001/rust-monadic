@@ -16,8 +16,6 @@
 //! Iterator and IntoIterator trait imports are [predefined](https://doc.rust-lang.org/std/prelude/index.html#prelude-contents)
 //!
 //! There are also Reader, Writer and State monads in their respective modules with their own macros.
-//! 
-//! There is no common behaviour macro by now, as trying to build transformers hits rust language cornerstones.
 //!
 //! ```no_run
 //! # #[macro_use] extern crate monadic;
@@ -64,3 +62,4 @@ pub mod writer;
 pub mod util;
 pub mod state;
 pub mod mio;
+pub mod reader_trans;
