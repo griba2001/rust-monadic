@@ -32,7 +32,7 @@ pub fn get<'a, S: Clone>() -> State<'a, S, S> {
    State { run_state: Box::new( |s: S| (s.clone(), s))} 
 }
 
-pub fn put<'a, S: Clone + 'static>( s: S) -> State<'a, S, ()> {
+pub fn put<'a, S: Clone + 'a>( s: S) -> State<'a, S, ()> {
    State { run_state: Box::new( move |_| ( (), s.clone()) )} 
 }
 
