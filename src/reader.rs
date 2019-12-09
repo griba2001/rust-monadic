@@ -4,7 +4,7 @@ pub struct Reader<'a, E, A> {
   pub run_reader: Box< dyn 'a + Fn(E) -> A>, 
 }
 
-impl<'a, E: 'a + Clone, A: 'static + Clone> Reader<'a, E, A> {
+impl<'a, E: 'a + Clone, A: 'a + Clone> Reader<'a, E, A> {
 
   pub fn pure(x: A) -> Self {
     Reader { run_reader: Box::new( move |_| x.clone())}  // (e -> a)
@@ -15,10 +15,10 @@ impl<'a, E: 'a + Clone, A: 'static + Clone> Reader<'a, E, A> {
        (* self.run_reader) (e)
   }
   
-  pub fn bind<B: 'static, F: 'static>(self, f: F) -> Reader<'a, E, B>
+  pub fn bind<B, F>(self, f: F) -> Reader<'a, E, B>
         where 
-          F: Fn(A) -> Reader<'a, E, B>,
-          B: 'static,
+          F: 'a + Fn(A) -> Reader<'a, E, B>,
+          B: 'a,
      {
        Reader { run_reader: 
            Box::new( move |e: E| { (* f( (* self.run_reader)( e.clone()) ).run_reader)( e) })
@@ -47,7 +47,7 @@ pub fn local<'a, E, A, F>(f: F, rdr: Reader<'a, E, A>) -> Reader<'a, E, A>
      where
        F: 'a + Fn(E) -> E,
        E: 'a + Clone, 
-       A: 'static + Clone,
+       A: 'a + Clone,
   {
 
     Reader { run_reader: 
