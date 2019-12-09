@@ -15,7 +15,7 @@ impl<'a, A, E, M> ReaderT<'a, E, M>
       M: 'a + Monad<Item=A>, 
 {
 
-  /// This function requires to type annotate the inner monad, better use lift( Vec::pure)
+  /// This function requires to type annotate the inner monad, better use lift( MonadInstance::pure)
   pub fn pure(x: A) -> Self {
     ReaderT { run_reader_t: Box::new( move |_| M::pure( x.clone() ))}  // (e -> a)
   }
