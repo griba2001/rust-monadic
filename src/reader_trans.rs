@@ -36,7 +36,7 @@ impl<'a, A, E, M> ReaderT<'a, E, M>
        }
      }
      
-     // initial_env returns the inner monad
+     // applying initial_env() to (e -> m a) returns the inner monad structure
      pub fn initial_env(self, e: E) -> M {
        (* self.run_reader_t) (e)
      }
