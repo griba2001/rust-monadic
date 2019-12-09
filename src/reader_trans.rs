@@ -12,14 +12,15 @@ impl<'a, A, E, M> ReaderT<'a, E, M>
     where
       E: 'a + Clone, 
       A: 'a + Clone,
-      M: 'a + Monad<Item=A> + FromIterator<A>,
+      M: 'a + Monad<Item=A>, 
 {
 
-  // This pure requires monad type annotated, better use lift( Vec::pure)
+  /// This function requires to type annotate the inner monad, better use lift( Vec::pure)
   pub fn pure(x: A) -> Self {
     ReaderT { run_reader_t: Box::new( move |_| M::pure( x.clone() ))}  // (e -> a)
   }
-
+  
+  /// FromIterator is required to convert the inner monad bind output FlatMap struct to the Monad instance
   pub fn bind<B, N, F>(self, f: F) -> ReaderT<'a, E, N>
         where 
           F: 'a + Fn(A) -> ReaderT<'a, E, N>,
@@ -30,7 +31,7 @@ impl<'a, A, E, M> ReaderT<'a, E, M>
            Box::new( move |e: E| { 
            let m = (* self.run_reader_t)( e.clone());
            let g = |a| (* f(a).run_reader_t)( e.clone());
-           M::bind( m, g).collect()
+           M::bind( m, g).collect()                        
            })
        }
      }
