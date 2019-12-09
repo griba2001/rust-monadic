@@ -193,13 +193,17 @@ result: ({"a": 1}, 9, {"b": 2, "a": 1})
 <a name="rdrt_mdo" id="rdrt_mdo"></a>
 ### The ReaderT monad transformer macro rdrt_mdo! 
 
-This monad transformer works only for monads that implement FromIterator, such as Vec, LinkedList and VecDeque.
+This monad transformer works only for monads that implement `Monad + FromIterator + Clone`, such as Vec, LinkedList and VecDeque.
 
-This macro requires more type annotations.
+This macro requires more type annotations, as the inner monad and the lambda argument may be undetermined.
+
+Instead of returning with `pure return_expression` do it specifying the inner monad as
+
+    lift Vec::pure( return_expression)
 
 Let bindings are not supported here. Instead you can use
 
-    v <- lift vec![expression]
+    v <- lift Vec::pure(expression)
 
 Example:
 ```rust
@@ -240,16 +244,15 @@ fn main() {
                y <- ask() as ReaderT<'_, Env, Vec<Env>>;
                
                // this acts as a typed `pure` specifying the monad type
-               
                lift Vec::pure((x, y))   
              }) ;
              
        // reader type restriction unnecessary ending with lift instead of pure
-       
        lift Vec::pure((env1.clone(), pair.0, pair.1))      
     };
 
-  // applying the initial_env() returns the nested monad structure
+  // applying the initial_env() to the contained (env -> m a) 
+  // returns the nested monad structure
   
   let res = bloc.initial_env( my_initial_env() );
 
@@ -263,6 +266,62 @@ $ cargo run --example reader_trans1
 
 result: [({"a": 1}, 5, {"a": 1, "b": 2}), ({"a": 1}, 7, {"a": 1, "b": 2})]
 ```
+Example using LinkedList instead of Vec:
+
+```rust
+// examples/reader_trans2
+
+#[allow(unused_imports)]
+use monadic::{rdrt_mdo, monad::{Monad}, 
+              reader_trans::{ReaderT, lift, ask, local}};
+use num::Integer;
+use partial_application::partial;
+use std::collections::{HashMap, LinkedList};
+
+type Env = HashMap<String, i32>;
+
+fn immutable_insert( k_slice: &str, v: i32, dict: Env) -> Env {
+   let mut dict1 = dict.clone();
+   dict1.insert( String::from(k_slice), v);
+   dict1
+}
+
+fn my_initial_env() -> Env {
+   immutable_insert( "a", 1, HashMap::new())
+}   
+
+fn main() {
+  let modify_env = partial!(immutable_insert => "b", 2, _);
+
+  // example with LinkedList as the nested monad
+  
+  let bloc = rdrt_mdo!{   // possible type restriction as ReaderT<'_, Env, LinkedList<_>>
+  
+       env1 <- ask() as ReaderT<'_, Env, LinkedList<Env>>;
+       pair <- local( modify_env, rdrt_mdo!{
+       
+               x <- lift (5..9).collect::<LinkedList<i32>>();
+               guard x.is_odd();
+               
+               y <- ask() as ReaderT<'_, Env, LinkedList<Env>>;
+               
+               // this acts as a typed `pure` specifying the monad type
+               lift LinkedList::pure((x, y))   
+             }) ;
+             
+       // reader type restriction unnecessary ending with lift instead of pure
+       lift LinkedList::pure((env1.clone(), pair.0, pair.1))      
+    };
+
+  // applying the initial_env() to the contained (env -> m a) 
+  // returns the nested monad structure
+  
+  let res = bloc.initial_env( my_initial_env() );
+
+  println!("result: {:?}", res);  
+}
+```
+It yields the same result using LinkedList as using Vec.
 
 <a name="wrdo" id="wrdo"></a>
 ### The Writer monad macro wrdo! 

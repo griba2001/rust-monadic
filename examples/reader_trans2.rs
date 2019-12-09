@@ -1,11 +1,11 @@
-// examples/reader_trans1
+// examples/reader_trans2
 
 #[allow(unused_imports)]
 use monadic::{rdrt_mdo, monad::{Monad}, 
               reader_trans::{ReaderT, lift, ask, local}};
 use num::Integer;
 use partial_application::partial;
-use std::collections::HashMap;
+use std::collections::{HashMap, LinkedList};
 
 type Env = HashMap<String, i32>;
 
@@ -22,24 +22,24 @@ fn my_initial_env() -> Env {
 fn main() {
   let modify_env = partial!(immutable_insert => "b", 2, _);
 
-  // example with Vec as the nested monad
+  // example with LinkedList as the nested monad
   
-  let bloc = rdrt_mdo!{   // possible type restriction as ReaderT<'_, Env, Vec<_>>
+  let bloc = rdrt_mdo!{   // possible type restriction as ReaderT<'_, Env, LinkedList<_>>
   
-       env1 <- ask() as ReaderT<'_, Env, Vec<Env>>;
+       env1 <- ask() as ReaderT<'_, Env, LinkedList<Env>>;
        pair <- local( modify_env, rdrt_mdo!{
        
-               x <- lift (5..9).collect::<Vec<i32>>();
+               x <- lift (5..9).collect::<LinkedList<i32>>();
                guard x.is_odd();
                
-               y <- ask() as ReaderT<'_, Env, Vec<Env>>;
+               y <- ask() as ReaderT<'_, Env, LinkedList<Env>>;
                
                // this acts as a typed `pure` specifying the monad type
-               lift Vec::pure((x, y))   
+               lift LinkedList::pure((x, y))   
              }) ;
              
        // reader type restriction unnecessary ending with lift instead of pure
-       lift Vec::pure((env1.clone(), pair.0, pair.1))      
+       lift LinkedList::pure((env1.clone(), pair.0, pair.1))      
     };
 
   // applying the initial_env() to the contained (env -> m a) 
