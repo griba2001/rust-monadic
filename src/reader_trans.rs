@@ -12,7 +12,7 @@ impl<'a, A, E, M> ReaderT<'a, E, M>
     where
       E: 'a + Clone, 
       A: 'a + Clone,
-      M: 'a + Monad<Item=A>, 
+      M: 'a + Clone + Monad<Item=A>, 
 {
 
   /// This function requires to type annotate the inner monad, better use lift( MonadInstance::pure)
@@ -41,6 +41,10 @@ impl<'a, A, E, M> ReaderT<'a, E, M>
        (* self.run_reader_t) (e)
      }
 
+     /// lift a monad
+     pub fn lift(m: M) -> ReaderT<'a, E, M> {
+        ReaderT { run_reader_t: Box::new( move |_| m.clone() )}
+     }
 }
 
 pub fn ask<'a, E: Clone, M: Monad<Item=E>>() -> ReaderT<'a, E, M> {
@@ -67,10 +71,10 @@ pub fn lift<'a, E: 'a, M: 'a + Clone>(m: M) -> ReaderT<'a, E, M> {
 
 #[macro_export]
 macro_rules! rdrt_mdo {
-  (lift $nested_monad:expr                ) => [lift($nested_monad)];
-  (guard $boolean:expr ; $($rest:tt)*) => [lift( if $boolean {vec![()]} else {vec![]}).bind( move |_| { rdrt_mdo!($($rest)*)} )];
+  (lift $nested_monad:expr                ) => [ReaderT::lift($nested_monad)];
+  (guard $boolean:expr ; $($rest:tt)*) => [ReaderT::lift( if $boolean {vec![()]} else {vec![]}).bind( move |_| { rdrt_mdo!($($rest)*)} )];
   (_ <- $monad:expr ; $($rest:tt)* ) => [ReaderT::bind(($monad), move |_| { rdrt_mdo!($($rest)*)} )];
-  ($v:ident <- lift $nested_monad:expr ; $($rest:tt)* ) => [ReaderT::bind( lift($nested_monad), move |$v| { rdrt_mdo!($($rest)*)} )];
+  ($v:ident <- lift $nested_monad:expr ; $($rest:tt)* ) => [ReaderT::bind( ReaderT::lift($nested_monad), move |$v| { rdrt_mdo!($($rest)*)} )];
   ($v:ident <- $monad:expr ; $($rest:tt)* ) => [ReaderT::bind(($monad), move |$v| { rdrt_mdo!($($rest)*)} )];
   ($monad:expr                            ) => [$monad];
 }
