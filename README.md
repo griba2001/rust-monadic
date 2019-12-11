@@ -193,7 +193,7 @@ result: ({"a": 1}, 9, {"b": 2, "a": 1})
 <a name="rdrt_mdo" id="rdrt_mdo"></a>
 ### The ReaderT monad transformer macro rdrt_mdo! 
 
-This monad transformer is strict and works only for monads that implement `Monad + FromIterator + Clone`, and where `from_iter · into_iter == id` such as Vec, LinkedList and VecDeque. 
+This monad transformer is strict and works only for monads that implement `Monad + FromIterator + Clone`, and where `from_iter · into_iter == id` such as Vec, LinkedList and VecDeque but not Option and Result. 
 
 This macro requires more type annotations, as the inner monad and the lambda argument may be undetermined.
 
@@ -355,8 +355,9 @@ fn main() {
         // run a subbloc and modify the log afterwards
         censor( modify_log,
                    wrdo!{
-                        listen( Writer::pure( 2))
-                    })
+                        _ <- tell_str("sub");
+                        Writer::pure( 2)
+                    }.listen())
         }.listen() ;
     
     println!("result: {:?}", res.unwrap()); 
@@ -367,7 +368,7 @@ Exec:
 ```bash
 $ cargo run --example writer1
 
-result: ((2, ""), "log1log2")
+result: ((2, "sub"), "log1sublog2")
 
 ```
 Example 2 with Vec as logger from examples/writer2.rs
