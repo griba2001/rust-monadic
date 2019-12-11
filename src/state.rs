@@ -36,7 +36,7 @@ pub fn put<'a, S: Clone + 'a>( s: S) -> State<'a, S, ()> {
    State { run_state: Box::new( move |_| ( (), s.clone()) )} 
 }
 
-
+/// macro for a State monad with a boxed `(s -> (a, s))` function
 #[macro_export]
 macro_rules! stdo {
   (pure $e:expr                           ) => [State::pure($e)];
@@ -47,13 +47,4 @@ macro_rules! stdo {
   ($monad:expr                            ) => [$monad];
 }
 
-/*
-// StateT definition fails to parse
-
-use crate::monad::Monad;
-
-pub struct StateT<'a, S, M: Monad, A> { 
-  pub run_state_t: Box<dyn 'a + Fn(S) -> M, where M::Item=(A,S) >, 
-}
-*/
 

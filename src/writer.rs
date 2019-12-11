@@ -123,7 +123,7 @@ pub fn listens<A, W: Clone, T, F: Fn(W) -> T>( f: F, writer: Writer<A, W>) -> Wr
 }
 
     
-/// Macro for a [Writer monad](https://wiki.haskell.org/All_About_Monads#The_Writer_monad)
+/// macro for a Writer monad that holds a pair (A, Monoid)
 ///
 /// The logger type (a local *Monoid* instance) can be established by using a `tell_...()` generator
 /// or by constraining the type of the macro result.
@@ -136,30 +136,3 @@ macro_rules! wrdo {
   ($v:ident <- $monad:expr ; $($rest:tt)* ) => [Writer::bind( ($monad), move |$v| { wrdo!($($rest)*)} )];
   ($monad:expr                            ) => [$monad];
 }
-
-// use crate::monad::Monad;
-
-/*
-
-// WriterT fails to parse
-
-pub struct WriterT<A, M: Monad, W = String>{ 
-  run_writer_t: M<Item=(A, W)>   // associated type not allowed
-  }
-*/
-
-/*
-
-// defining it as a monad that will have implementation for elements as pairs (A,W)
-
-pub struct WriterT<M>{ 
-  run_writer_t: M,   
-  }
-
-impl<M, A, W> for WriterT<M> 
-      where 
-        M: Monad, 
-        M::Item = (A,W) // !! equality constraints not yet supported
-   {  
-}  
-*/

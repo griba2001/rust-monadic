@@ -20,7 +20,6 @@ impl<'a, A, E, M> ReaderT<'a, E, M>
     ReaderT { run_reader_t: Box::new( move |_| M::pure( x.clone() ))}  // (e -> a)
   }
   
-  /// FromIterator is required to convert the inner monad bind output FlatMap struct to the Monad instance
   pub fn bind<B, N, F>(self, f: F) -> ReaderT<'a, E, N>
         where 
           F: 'a + Fn(A) -> ReaderT<'a, E, N>,
@@ -31,7 +30,7 @@ impl<'a, A, E, M> ReaderT<'a, E, M>
            Box::new( move |e: E| { 
            let m = (* self.run_reader_t)( e.clone());
            let g = |a| (* f(a).run_reader_t)( e.clone());
-           M::bind( m, g).collect()                        
+           M::bind( m, g).collect::<N>()                        
            })
        }
      }
@@ -69,6 +68,7 @@ pub fn lift<'a, E: 'a, M: 'a + Clone>(m: M) -> ReaderT<'a, E, M> {
      ReaderT { run_reader_t: Box::new( move |_| m.clone() )}
 }
 
+/// macro for a ReaderT transformer with a boxed `(env -> Monad)`
 #[macro_export]
 macro_rules! rdrt_mdo {
   (lift $nested_monad:expr                ) => [ReaderT::lift($nested_monad)];
