@@ -99,7 +99,30 @@ impl<T> MZero for VecDeque<T> {
    fn mzero() -> Self {Self::new()}
 }
 
+pub trait MPlus: MZero { 
+   fn mplus(&mut self, _: &mut Self) ;
+}
 
+impl<T> MPlus for Vec<T> {
+   fn mplus(&mut self, other: &mut Self) {
+      self.append( other);
+   }
+}
+
+impl<T> MPlus for LinkedList<T> {
+   fn mplus(&mut self, other: &mut Self) {
+      self.append( other);
+   }
+}
+
+impl<T> MPlus for VecDeque<T> {
+   fn mplus(&mut self, other: &mut Self) {
+      self.append( other);
+   }
+}
+
+/// macro for iterables (IntoIterator) as monads enabling monad comprehensions over iterables
+///
 /// You can use: 
 /// * `pure return_expresion`    to return an expression value
 /// * `monadic_expression`       to end with a monad expression
