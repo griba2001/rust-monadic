@@ -194,7 +194,7 @@ result: ({"a": 1}, 9, {"b": 2, "a": 1})
 <a name="rdrt_mdo" id="rdrt_mdo"></a>
 ### The ReaderT monad transformer macro rdrt_mdo! 
 
-This monad transformer is strict and works only for monads that implement `Monad + FromIterator + Clone`, e.g. Vec, LinkedList and VecDeque but not Option and Result which collect values in an container inside. 
+This monad transformer is strict and works only for monads that implement `Monad + FromIterator + Clone`, only tested with Vec, LinkedList and VecDeque. 
 
 This macro requires more type annotations, as the inner monad and the lambda argument may be undetermined.
 
@@ -519,6 +519,8 @@ test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out
 ```
 
 Changes:
+
+v. 0.4.9: readme correction.
 
 v. 0.4.8: added the WriterT transformer for (Vec, LinkedList, VecDeque) as nested monads
 
