@@ -1,6 +1,6 @@
 [package]
 name = "monadic"
-version = "0.4.7"
+version = "0.4.8"
 authors = ["Gabriel Riba Faura <griba2001@gmail.com>"]
 edition = "2018"
 license = "MIT"
