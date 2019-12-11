@@ -4,6 +4,7 @@
 * [A Reader monad bloc macro](#rdrdo)
 * [A ReaderT monad transformer bloc macro](#rdrt_mdo)
 * [A Writer monad bloc macro](#wrdo)
+* [A WriterT monad transformer bloc macro](#wrt_mdo)
 * [A State monad bloc macro](#stdo)
 
 <a name="mdo" id="mdo"></a>
@@ -193,7 +194,7 @@ result: ({"a": 1}, 9, {"b": 2, "a": 1})
 <a name="rdrt_mdo" id="rdrt_mdo"></a>
 ### The ReaderT monad transformer macro rdrt_mdo! 
 
-This monad transformer is strict and works only for monads that implement `Monad + FromIterator + Clone`, and where `from_iter · into_iter == id` such as Vec, LinkedList and VecDeque but not Option and Result. 
+This monad transformer is strict and works only for monads that implement `Monad + FromIterator + Clone`, e.g. Vec, LinkedList and VecDeque but not Option and Result which collect values in an container inside. 
 
 This macro requires more type annotations, as the inner monad and the lambda argument may be undetermined.
 
@@ -414,6 +415,63 @@ $ cargo run --example writer2
 result: ((2, []), [1, 2, 3, 4, 5, 6])
 
 ```
+<a name="wrt_mdo" id="wrt_mdo"></a>
+### The WriterT monad transformer macro wrt_mdo! 
+
+Only for Vec, LinkedList or VecDeque as inner monads.
+
+Example:
+
+```rust
+//! examples/writer_trans1.rs
+//!
+//! you may set the logger type 
+//! by beginning with a `tell...` function within the macro `wrdo` 
+//! or by declaring it as the result type 
+//! where String is the default if omitted
+//! as in `let res : Writer< _, String > = wrdo!{...}`
+//!
+//! `censor(), listen() and listens()` can be used as functions or as methods of a Writer bloc
+
+#[allow(unused_imports)]
+use monadic::{wrt_mdo, monad::Monad, writer_trans::{WriterT, lift, tell, tell_str, censor, listen}};
+use monadic::util::concat_string_str;
+use partial_application::partial;
+use num::Integer;
+
+fn main() {
+    
+    let modify_log = partial!( concat_string_str => _, "log2");
+    
+    let bloc = wrt_mdo!{  // : WriterT< Vec<_>, String>
+    
+        _ <- tell_str( "log1") as WriterT< Vec<_>> ;
+        x <- lift (5..9).collect::<Vec<_>>() ;
+        guard x.is_odd() ;
+        
+        // run a subbloc and modify its log afterwards
+        pair <- censor( modify_log,
+                        wrt_mdo!{
+                            _ <- tell_str("sub");
+                            lift Vec::pure( 2)
+                        }.listen()
+                      );
+                    
+        lift Vec::pure( (x, pair.0, pair.1) )            
+        }.listen() ;
+        
+    let res = bloc.unwrap();    
+    
+    println!("result: {:?}", res); 
+}
+```
+Execution:
+```bash
+$ cargo run --example writer_trans1
+
+result: [((5, 2, "sub"), "log1sublog2"), ((7, 2, "sub"), "log1sublog2")]
+```
+
 <a name="stdo" id="stdo"></a>
 ### The State monad macro stdo! 
 
@@ -462,7 +520,9 @@ test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out
 
 Changes:
 
-v. 0.4.7: added the ReaderT transformer for monads that implement FromIterator (Vec, LinkedList, VecDeque)
+v. 0.4.8: added the WriterT transformer for (Vec, LinkedList, VecDeque) as nested monads
+
+v. 0.4.7: added the ReaderT transformer for (Vec, LinkedList, VecDeque) as nested monads
 
 v. 0.4.5 and 0.4.6: doc cleaning
 
