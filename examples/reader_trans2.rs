@@ -2,7 +2,7 @@
 
 #[allow(unused_imports)]
 use monadic::{rdrt_mdo, monad::{Monad}, 
-              reader_trans::{ReaderT, lift, ask, local}};
+              reader_trans::{ReaderT, ask, local}};
 use num::Integer;
 use partial_application::partial;
 use std::collections::{HashMap, LinkedList};
@@ -42,7 +42,7 @@ fn main() {
        lift LinkedList::pure((env1.clone(), pair.0, pair.1))      
     };
 
-  // applying the initial_env() to the contained (env -> m a) 
+  // applying the initial_env() to the transformer (env -> m a) 
   // returns the nested monad structure
   
   let res = bloc.initial_env( my_initial_env() );

@@ -193,7 +193,7 @@ result: ({"a": 1}, 9, {"b": 2, "a": 1})
 <a name="rdrt_mdo" id="rdrt_mdo"></a>
 ### The ReaderT monad transformer macro rdrt_mdo! 
 
-This monad transformer works only for monads that implement `Monad + FromIterator + Clone`, such as Vec, LinkedList and VecDeque.
+This monad transformer is strict and works only for monads that implement `Monad + FromIterator + Clone`, and where `from_iter · into_iter == id` such as Vec, LinkedList and VecDeque. 
 
 This macro requires more type annotations, as the inner monad and the lambda argument may be undetermined.
 
@@ -207,11 +207,11 @@ Let bindings are not supported here. Instead you can use
 
 Example:
 ```rust
-// examples/reader_trans1
+// examples/reader_trans1.rs
 
 #[allow(unused_imports)]
 use monadic::{rdrt_mdo, monad::{Monad}, 
-              reader_trans::{ReaderT, lift, ask, local}};
+              reader_trans::{ReaderT, ask, local}};
 use num::Integer;
 use partial_application::partial;
 use std::collections::HashMap;
@@ -251,7 +251,7 @@ fn main() {
        lift Vec::pure((env1.clone(), pair.0, pair.1))      
     };
 
-  // applying the initial_env() to the contained (env -> m a) 
+  // applying the initial_env() to the transformer (env -> m a) 
   // returns the nested monad structure
   
   let res = bloc.initial_env( my_initial_env() );
@@ -262,7 +262,7 @@ fn main() {
 Execution:
 
 ```bash
-$ cargo run --example reader_trans1
+$ cargo run --example reader_trans1.rs
 
 result: [({"a": 1}, 5, {"a": 1, "b": 2}), ({"a": 1}, 7, {"a": 1, "b": 2})]
 ```
@@ -273,7 +273,7 @@ Example using LinkedList instead of Vec:
 
 #[allow(unused_imports)]
 use monadic::{rdrt_mdo, monad::{Monad}, 
-              reader_trans::{ReaderT, lift, ask, local}};
+              reader_trans::{ReaderT, ask, local}};
 use num::Integer;
 use partial_application::partial;
 use std::collections::{HashMap, LinkedList};
@@ -313,7 +313,7 @@ fn main() {
        lift LinkedList::pure((env1.clone(), pair.0, pair.1))      
     };
 
-  // applying the initial_env() to the contained (env -> m a) 
+  // applying the initial_env() to the transformer (env -> m a) 
   // returns the nested monad structure
   
   let res = bloc.initial_env( my_initial_env() );
