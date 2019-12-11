@@ -74,6 +74,30 @@ impl<T> Monad for VecDeque<T>{
    }
 }
 
+pub trait MZero: Monad { 
+
+     fn mzero() -> Self;
+   }
+   
+impl<T> MZero for Option<T> {
+
+   fn mzero() -> Self {None}
+}
+
+impl<T> MZero for Vec<T> {
+
+   fn mzero() -> Self {Self::new()}
+}
+
+impl<T> MZero for LinkedList<T> {
+
+   fn mzero() -> Self {Self::new()}
+}
+
+impl<T> MZero for VecDeque<T> {
+
+   fn mzero() -> Self {Self::new()}
+}
 
 
 /// You can use: 

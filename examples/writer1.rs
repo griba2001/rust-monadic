@@ -24,8 +24,9 @@ fn main() {
         // run a subbloc and modify the log afterwards
         censor( modify_log,
                    wrdo!{
-                        listen( Writer::pure( 2))
-                    })
+                        _ <- tell_str("sub");
+                        Writer::pure( 2)
+                    }.listen())
         }.listen() ;
     
     println!("result: {:?}", res.unwrap()); 
