@@ -23,6 +23,7 @@ fn main() {
         _ <- tell_str( "log1") as WriterT< Vec<_>> ;
         x <- lift (5..9).collect::<Vec<_>>() ;
         guard x.is_odd() ;
+        let z = x + 1;
         
         // run a subbloc and modify its log afterwards
         pair <- censor( modify_log,
@@ -32,10 +33,11 @@ fn main() {
                         }.listen()
                       );
                     
-        lift Vec::pure( (x, pair.0, pair.1) )            
+        lift Vec::pure( (z, pair.0, pair.1) )            
         }.listen() ;
         
-    let res = bloc.unwrap();    
+    // unwrap() returns the nested monad structure       
+    let res = bloc.unwrap(); 
     
     println!("result: {:?}", res); 
 }

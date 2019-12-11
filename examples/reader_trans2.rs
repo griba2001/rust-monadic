@@ -31,11 +31,12 @@ fn main() {
        
                x <- lift (5..9).collect::<LinkedList<i32>>();
                guard x.is_odd();
+               let z = x + 1;
                
                y <- ask() as ReaderT<'_, Env, LinkedList<Env>>;
                
                // this acts as a typed `pure` specifying the monad type
-               lift LinkedList::pure((x, y))   
+               lift LinkedList::pure((z, y))   
              }) ;
              
        // reader type restriction unnecessary ending with lift instead of pure

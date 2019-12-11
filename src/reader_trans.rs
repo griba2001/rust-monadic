@@ -73,6 +73,7 @@ pub fn lift<'a, E: 'a, M: 'a + Clone>(m: M) -> ReaderT<'a, E, M> {
 macro_rules! rdrt_mdo {
   (lift $nested_monad:expr                ) => [ReaderT::lift($nested_monad)];
   (guard $boolean:expr ; $($rest:tt)*) => [ReaderT::lift( if $boolean {vec![()]} else {vec![]}).bind( move |_| { rdrt_mdo!($($rest)*)} )];
+  (let $v:ident = $e:expr ; $($rest:tt)*) => [ReaderT::lift(vec![$e]).bind( move |$v| { rdrt_mdo!($($rest)*)} )];
   (_ <- $monad:expr ; $($rest:tt)* ) => [ReaderT::bind(($monad), move |_| { rdrt_mdo!($($rest)*)} )];
   ($v:ident <- lift $nested_monad:expr ; $($rest:tt)* ) => [ReaderT::bind( ReaderT::lift($nested_monad), move |$v| { rdrt_mdo!($($rest)*)} )];
   ($v:ident <- $monad:expr ; $($rest:tt)* ) => [ReaderT::bind(($monad), move |$v| { rdrt_mdo!($($rest)*)} )];

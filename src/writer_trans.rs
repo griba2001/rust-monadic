@@ -141,6 +141,7 @@ pub fn tell_array<T: Clone>(v: &[T]) -> WriterT<Vec<()>, Vec<T>> {
 macro_rules! wrt_mdo {
   (lift $nested_monad:expr                ) => [WriterT::lift($nested_monad)];
   (guard $boolean:expr ; $($rest:tt)*) => [WriterT::lift( if $boolean {vec![()]} else {vec![]}).bind( move |_| { wrt_mdo!($($rest)*)} )];
+  (let $v:ident = $e:expr ; $($rest:tt)*) => [WriterT::lift(vec![$e]).bind( move |$v| { wrt_mdo!($($rest)*)} )];
   (_ <- $monad:expr ; $($rest:tt)* ) => [WriterT::bind(($monad), move |_| { wrt_mdo!($($rest)*)} )];
   ($v:ident <- lift $nested_monad:expr ; $($rest:tt)* ) => [WriterT::bind( WriterT::lift($nested_monad), move |$v| { wrt_mdo!($($rest)*)} )];
   ($v:ident <- $monad:expr ; $($rest:tt)* ) => [WriterT::bind(($monad), move |$v| { wrt_mdo!($($rest)*)} )];

@@ -202,13 +202,9 @@ Instead of returning with `pure return_expression` do it specifying the inner mo
 
     lift Vec::pure( return_expression)
 
-Let bindings are not supported here. Instead you can use
-
-    v <- lift Vec::pure(expression)
-
 Example:
 ```rust
-// examples/reader_trans1.rs
+// examples/reader_trans1
 
 #[allow(unused_imports)]
 use monadic::{rdrt_mdo, monad::{Monad}, 
@@ -240,12 +236,15 @@ fn main() {
        pair <- local( modify_env, rdrt_mdo!{
        
                x <- lift (5..9).collect::<Vec<i32>>();
+               
                guard x.is_odd();
+               
+               let z = x + 1;
                
                y <- ask() as ReaderT<'_, Env, Vec<Env>>;
                
                // this acts as a typed `pure` specifying the monad type
-               lift Vec::pure((x, y))   
+               lift Vec::pure((z, y))   
              }) ;
              
        // reader type restriction unnecessary ending with lift instead of pure
@@ -265,7 +264,7 @@ Execution:
 ```bash
 $ cargo run --example reader_trans1.rs
 
-result: [({"a": 1}, 5, {"a": 1, "b": 2}), ({"a": 1}, 7, {"a": 1, "b": 2})]
+result: [({"a": 1}, 6, {"b": 2, "a": 1}), ({"a": 1}, 8, {"b": 2, "a": 1})]
 ```
 Example using LinkedList instead of Vec:
 
@@ -303,11 +302,12 @@ fn main() {
        
                x <- lift (5..9).collect::<LinkedList<i32>>();
                guard x.is_odd();
+               let z = x + 1;
                
                y <- ask() as ReaderT<'_, Env, LinkedList<Env>>;
                
                // this acts as a typed `pure` specifying the monad type
-               lift LinkedList::pure((x, y))   
+               lift LinkedList::pure((z, y))   
              }) ;
              
        // reader type restriction unnecessary ending with lift instead of pure
@@ -322,7 +322,7 @@ fn main() {
   println!("result: {:?}", res);  
 }
 ```
-It yields the same result using LinkedList as using Vec.
+It yields the same result as above.
 
 <a name="wrdo" id="wrdo"></a>
 ### The Writer monad macro wrdo! 
@@ -448,6 +448,7 @@ fn main() {
         _ <- tell_str( "log1") as WriterT< Vec<_>> ;
         x <- lift (5..9).collect::<Vec<_>>() ;
         guard x.is_odd() ;
+        let z = x + 1;
         
         // run a subbloc and modify its log afterwards
         pair <- censor( modify_log,
@@ -457,10 +458,11 @@ fn main() {
                         }.listen()
                       );
                     
-        lift Vec::pure( (x, pair.0, pair.1) )            
+        lift Vec::pure( (z, pair.0, pair.1) )            
         }.listen() ;
         
-    let res = bloc.unwrap();    
+    // unwrap() returns the nested monad structure       
+    let res = bloc.unwrap(); 
     
     println!("result: {:?}", res); 
 }
@@ -469,7 +471,7 @@ Execution:
 ```bash
 $ cargo run --example writer_trans1
 
-result: [((5, 2, "sub"), "log1sublog2"), ((7, 2, "sub"), "log1sublog2")]
+result: [((6, 2, "sub"), "log1sublog2"), ((8, 2, "sub"), "log1sublog2")]
 ```
 
 <a name="stdo" id="stdo"></a>
@@ -519,6 +521,8 @@ test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out
 ```
 
 Changes:
+
+v. 0.4.10: added let bindings to the ReaderT and WriterT transformers macro
 
 v. 0.4.9: readme correction.
 

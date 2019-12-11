@@ -30,12 +30,15 @@ fn main() {
        pair <- local( modify_env, rdrt_mdo!{
        
                x <- lift (5..9).collect::<Vec<i32>>();
+               
                guard x.is_odd();
+               
+               let z = x + 1;
                
                y <- ask() as ReaderT<'_, Env, Vec<Env>>;
                
                // this acts as a typed `pure` specifying the monad type
-               lift Vec::pure((x, y))   
+               lift Vec::pure((z, y))   
              }) ;
              
        // reader type restriction unnecessary ending with lift instead of pure
