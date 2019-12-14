@@ -5,8 +5,11 @@
 
 use monadic::{stdo, state::{State, get, put}};
 
+type St = i32;
+
 fn main() {
-  let bloc: State<'_, i32, _> = stdo!{
+
+  let res = stdo!{  // : State<'_, St, _>
   
        x <- pure 9;
        y <- get();
@@ -14,9 +17,7 @@ fn main() {
        z <- get(); 
        pure (x, y, z) 
        
-    };
-    
-  let res = bloc.initial_state(0);  
+    }.initial_state(0) ;
 
   println!("result: {:?}", res);  
 }
