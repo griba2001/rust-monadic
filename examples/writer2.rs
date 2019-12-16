@@ -12,12 +12,13 @@ use monadic::{wrdo, writer::{Writer, tell, censor, listen}};
 use monadic::util::concat_vec_array;
 use partial_application::partial;
 
+type Log = Vec<i32>;
 
 fn main() {
 
     let modify_log = partial!( concat_vec_array => _, &[4,5,6]);
     
-    let res : Writer< _, Vec<_>> = wrdo!{ 
+    let res : Writer< _, Log> = wrdo!{ 
     
         _ <- tell( vec![1,2,3]) ;
         

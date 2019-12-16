@@ -12,11 +12,13 @@ use monadic::{wrdo, writer::{Writer, tell, tell_str, censor, listen}};
 use monadic::util::concat_string_str;
 use partial_application::partial;
 
+type Log = String;
+
 fn main() {
     
     let modify_log = partial!( concat_string_str => _, "log2");
     
-    let res : Writer< _, String> = wrdo!{ 
+    let res : Writer< _, Log> = wrdo!{ 
     
         _ <- tell_str( "log1") ;
         
