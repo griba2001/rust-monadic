@@ -9,6 +9,7 @@ pub struct Writer<A, W = String>{
   run_writer: (A, W)
   }
 
+/*
 #[derive(Clone)]  
 pub struct WriterIterator<A> {
   traversed: bool,
@@ -38,6 +39,7 @@ impl<A: Clone, W> IntoIterator for  Writer<A, W> {
     }
   }
 }
+*/
 
 impl<A, W: Monoid, F> Writer<(A, F), W> 
     where F: Fn(W) -> W {
