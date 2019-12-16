@@ -244,14 +244,11 @@ fn main() {
                guard x.is_odd();
                
                let z = x + 1;
-               
                y <- ask();
                
-               // this acts as a typed `pure` specifying the monad type
-               pure (z, y)
+               pure (z, y)   // equivalent to lift Vec::pure((z, y))
              }) ;
              
-       // reader type restriction unnecessary ending with lift instead of pure
        pure (env1.clone(), pair.0, pair.1)      
     };
 
