@@ -94,11 +94,13 @@ impl<A, M, W> WriterT<M, W>
    
 }
 
+/*
 /// lift a monad
 pub fn lift<M: Bind, W: Monoid>(m: M) -> WriterT<M, W>
 {
    WriterT {run_writer_t: (m, W::mempty())}
-}  
+} 
+*/
 
 /// `censor` modifies the log
 pub fn censor<M, W, F: Fn(W) -> W>(f: F, wrt: WriterT<M, W>) -> WriterT<M, W> 
@@ -124,8 +126,8 @@ pub fn listens<A, M: Bind<Item=A>, W: Clone, V, F: Fn(W) -> V>(wrt: WriterT<M, W
 }
 
 /// `tell` sets the log value
-pub fn tell<W>(s: W) -> WriterT<Vec<()>, W> {
-        WriterT{ run_writer_t: (vec!(()), s)}
+pub fn tell<W: Clone>(s: W) -> WriterT<Vec<()>, W> {
+        WriterT{ run_writer_t: (vec!(()), s.clone())}
     }
 
 pub fn tell_str(s: &str) -> WriterT<Vec<()>, String> {
@@ -136,13 +138,22 @@ pub fn tell_array<T: Clone>(v: &[T]) -> WriterT<Vec<()>, Vec<T>> {
         WriterT{ run_writer_t: (vec!(()), Vec::from( v))}
     }
     
-/// macro for a WriterT transformer that holds a (Monad, Monoid) pair
+/// WriterT monad transformer macro
 #[macro_export]
 macro_rules! wrt_mdo {
   (lift $nested_monad:expr                ) => [WriterT::lift($nested_monad)];
+  (pure $e:expr                ) => [WriterT::lift(vec!($e))];
   (guard $boolean:expr ; $($rest:tt)*) => [WriterT::lift( if $boolean {vec![()]} else {vec![]}).bind( move |_| { wrt_mdo!($($rest)*)} )];
-  (let $v:ident = $e:expr ; $($rest:tt)*) => [WriterT::lift(vec![$e]).bind( move |$v| { wrt_mdo!($($rest)*)} )];
+  (_ <- tell_str $str:literal ; $($rest:tt)* ) => [(tell_str($str) as WriterT<Vec<_>, Log>).bind( 
+                                                      move |_| { wrt_mdo!($($rest)*)} )];
+  (_ <- tell_array $ar:expr ; $($rest:tt)* ) => [(tell_array($ar) as WriterT<Vec<_>, Log>).bind( 
+                                                      move |_| { wrt_mdo!($($rest)*)} )];
+  (_ <- tell_vec $e:expr ; $($rest:tt)* ) => [(tell($e) as WriterT<Vec<_>, Log>).bind( 
+                                                      move |_| { wrt_mdo!($($rest)*)} )];
+  (_ <- tell_string $e:expr ; $($rest:tt)* ) => [(tell($e) as WriterT<Vec<_>, Log>).bind( 
+                                                      move |_| { wrt_mdo!($($rest)*)} )];
   (_ <- $monad:expr ; $($rest:tt)* ) => [WriterT::bind(($monad), move |_| { wrt_mdo!($($rest)*)} )];
+  (let $v:ident = $e:expr ; $($rest:tt)* ) => [WriterT::lift(vec!($e)).bind( move |$v| { wrt_mdo!($($rest)*)} )];
   ($v:ident <- lift $nested_monad:expr ; $($rest:tt)* ) => [WriterT::bind( WriterT::lift($nested_monad), move |$v| { wrt_mdo!($($rest)*)} )];
   ($v:ident <- $monad:expr ; $($rest:tt)* ) => [WriterT::bind(($monad), move |$v| { wrt_mdo!($($rest)*)} )];
   ($monad:expr                            ) => [$monad];
