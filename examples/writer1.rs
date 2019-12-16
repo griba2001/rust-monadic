@@ -7,7 +7,6 @@
 //! as in `let res : Writer< _, String > = wrdo!{...}`
 //!
 //! `censor(), listen() and listens()` can be used as functions or as methods of a Writer bloc
-
 #[allow(unused_imports)]
 use monadic::{wrdo, writer::{Writer, tell, tell_str, censor, listen}};
 use monadic::util::concat_string_str;
@@ -22,11 +21,12 @@ fn main() {
         _ <- tell_str( "log1") ;
         
         // run a subbloc and modify the log afterwards
-        censor( modify_log,
+        pair <- censor( modify_log,
                    wrdo!{
                         _ <- tell_str("sub");
-                        Writer::pure( 2)
-                    }.listen())
+                        pure 2
+                    }.listen());
+        pure pair            
         }.listen() ;
     
     println!("result: {:?}", res.unwrap()); 

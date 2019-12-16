@@ -7,7 +7,7 @@
 //! as in `let res : Writer< _, Vec<_> > = wrdo!{...}`
 //!
 //! `censor(), listen() and listens()` can be used as functions or as methods of a Writer bloc
-
+#[allow(unused_imports)]
 use monadic::{wrdo, writer::{Writer, tell, censor, listen}};
 use monadic::util::concat_vec_array;
 use partial_application::partial;
@@ -22,10 +22,12 @@ fn main() {
         _ <- tell( vec![1,2,3]) ;
         
         // run a subbloc and modify the log afterwards
-        censor( modify_log,
+        pair <-censor( modify_log,
                    wrdo!{
-                        listen( Writer::pure( 2))
-                    })
+                        _ <- tell( vec![0]) ;
+                        pure 2
+                    }.listen());
+        pure pair            
         }.listen() ;
     
     println!("result: {:?}", res.unwrap()); 
