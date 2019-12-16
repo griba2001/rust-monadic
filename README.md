@@ -194,13 +194,13 @@ result: ({"a": 1}, 9, {"b": 2, "a": 1})
 <a name="rdrt_mdo" id="rdrt_mdo"></a>
 ### The ReaderT monad transformer macro rdrt_mdo! 
 
-This monad transformer is strict and works only for monads that implement `Monad + FromIterator + Clone`, only tested with Vec, LinkedList and VecDeque. 
+This monad transformer is strict and works only for inner monads that implement `Monad + FromIterator + Clone`, only with Vec, LinkedList and VecDeque. You can mix instructions with either monad using `lift` since binding occurs by iterating `IntoIterator`'s through `into_iter().flat_map().collect()`.
 
 This macro requires more type annotations, as the inner monad and the lambda argument may be undetermined.
 
-Instead of returning with `pure return_expression` do it specifying the inner monad as
+To reduce type annotations, they are inserted with `ask()` by the macro, using `Env` as the environement type alias which must be defined.
 
-    lift Vec::pure( return_expression)
+`pure return_expression` is translated by the macro to `lift Vec::pure( return_expression)`
 
 Example:
 ```rust
@@ -213,7 +213,9 @@ use num::Integer;
 use partial_application::partial;
 use std::collections::HashMap;
 
-type Env = HashMap<String, i32>;
+/// You must use the type alias Env as it is used in the macro
+/// to save you type annotations
+type Env = HashMap<String, i32>; 
 
 fn immutable_insert( k_slice: &str, v: i32, dict: Env) -> Env {
    let mut dict1 = dict.clone();
@@ -232,23 +234,25 @@ fn main() {
   
   let bloc = rdrt_mdo!{   // possible type restriction as ReaderT<'_, Env, Vec<_>>
   
-       env1 <- ask() as ReaderT<'_, Env, Vec<Env>>;
+       env1 <- ask(); // the macro adds the type annotation as ReaderT<'_, Env, Vec<Env>>
+       
+       // run a subblock with a modified env.
        pair <- local( modify_env, rdrt_mdo!{
        
-               x <- lift (5..9).collect::<Vec<i32>>();
+               x <- lift (5..9).collect::<Vec<_>>();
                
                guard x.is_odd();
                
                let z = x + 1;
                
-               y <- ask() as ReaderT<'_, Env, Vec<Env>>;
+               y <- ask();
                
                // this acts as a typed `pure` specifying the monad type
-               lift Vec::pure((z, y))   
+               pure (z, y)
              }) ;
              
        // reader type restriction unnecessary ending with lift instead of pure
-       lift Vec::pure((env1.clone(), pair.0, pair.1))      
+       pure (env1.clone(), pair.0, pair.1)      
     };
 
   // applying the initial_env() to the transformer (env -> m a) 
@@ -262,67 +266,10 @@ fn main() {
 Execution:
 
 ```bash
-$ cargo run --example reader_trans1.rs
+$ cargo run --example reader_trans1
 
-result: [({"a": 1}, 6, {"b": 2, "a": 1}), ({"a": 1}, 8, {"b": 2, "a": 1})]
+result: [({"a": 1}, 6, {"a": 1, "b": 2}), ({"a": 1}, 8, {"a": 1, "b": 2})]
 ```
-Example using LinkedList instead of Vec:
-
-```rust
-// examples/reader_trans2
-
-#[allow(unused_imports)]
-use monadic::{rdrt_mdo, monad::{Monad}, 
-              reader_trans::{ReaderT, ask, local}};
-use num::Integer;
-use partial_application::partial;
-use std::collections::{HashMap, LinkedList};
-
-type Env = HashMap<String, i32>;
-
-fn immutable_insert( k_slice: &str, v: i32, dict: Env) -> Env {
-   let mut dict1 = dict.clone();
-   dict1.insert( String::from(k_slice), v);
-   dict1
-}
-
-fn my_initial_env() -> Env {
-   immutable_insert( "a", 1, HashMap::new())
-}   
-
-fn main() {
-  let modify_env = partial!(immutable_insert => "b", 2, _);
-
-  // example with LinkedList as the nested monad
-  
-  let bloc = rdrt_mdo!{   // possible type restriction as ReaderT<'_, Env, LinkedList<_>>
-  
-       env1 <- ask() as ReaderT<'_, Env, LinkedList<Env>>;
-       pair <- local( modify_env, rdrt_mdo!{
-       
-               x <- lift (5..9).collect::<LinkedList<i32>>();
-               guard x.is_odd();
-               let z = x + 1;
-               
-               y <- ask() as ReaderT<'_, Env, LinkedList<Env>>;
-               
-               // this acts as a typed `pure` specifying the monad type
-               lift LinkedList::pure((z, y))   
-             }) ;
-             
-       // reader type restriction unnecessary ending with lift instead of pure
-       lift LinkedList::pure((env1.clone(), pair.0, pair.1))      
-    };
-
-  // applying the initial_env() to the transformer (env -> m a) 
-  // returns the nested monad structure
-  
-  let res = bloc.initial_env( my_initial_env() );
-
-  println!("result: {:?}", res);  
-}
-```
-It yields the same result as above.
 
 <a name="wrdo" id="wrdo"></a>
 ### The Writer monad macro wrdo! 
@@ -339,26 +286,28 @@ A [Writer monad](https://wiki.haskell.org/All_About_Monads#The_Writer_monad) ada
 //! as in `let res : Writer< _, String > = wrdo!{...}`
 //!
 //! `censor(), listen() and listens()` can be used as functions or as methods of a Writer bloc
-
 #[allow(unused_imports)]
 use monadic::{wrdo, writer::{Writer, tell, tell_str, censor, listen}};
 use monadic::util::concat_string_str;
 use partial_application::partial;
 
+type Log = String;
+
 fn main() {
     
     let modify_log = partial!( concat_string_str => _, "log2");
     
-    let res : Writer< _, String> = wrdo!{ 
+    let res : Writer< _, Log> = wrdo!{ 
     
         _ <- tell_str( "log1") ;
         
         // run a subbloc and modify the log afterwards
-        censor( modify_log,
+        pair <- censor( modify_log,
                    wrdo!{
                         _ <- tell_str("sub");
-                        Writer::pure( 2)
-                    }.listen())
+                        pure 2
+                    }.listen());
+        pure pair            
         }.listen() ;
     
     println!("result: {:?}", res.unwrap()); 
@@ -384,25 +333,28 @@ Example 2 with Vec as logger from examples/writer2.rs
 //! as in `let res : Writer< _, Vec<_> > = wrdo!{...}`
 //!
 //! `censor(), listen() and listens()` can be used as functions or as methods of a Writer bloc
-
+#[allow(unused_imports)]
 use monadic::{wrdo, writer::{Writer, tell, censor, listen}};
 use monadic::util::concat_vec_array;
 use partial_application::partial;
 
+type Log = Vec<i32>;
 
 fn main() {
 
     let modify_log = partial!( concat_vec_array => _, &[4,5,6]);
     
-    let res : Writer< _, Vec<_>> = wrdo!{ 
+    let res : Writer< _, Log> = wrdo!{ 
     
         _ <- tell( vec![1,2,3]) ;
         
         // run a subbloc and modify the log afterwards
-        censor( modify_log,
+        pair <-censor( modify_log,
                    wrdo!{
-                        listen( Writer::pure( 2))
-                    })
+                        _ <- tell( vec![0]) ;
+                        pure 2
+                    }.listen());
+        pure pair            
         }.listen() ;
     
     println!("result: {:?}", res.unwrap()); 
@@ -412,13 +364,17 @@ fn main() {
 ```bash
 $ cargo run --example writer2
 
-result: ((2, []), [1, 2, 3, 4, 5, 6])
+result: ((2, [0]), [1, 2, 3, 0, 4, 5, 6])
 
 ```
 <a name="wrt_mdo" id="wrt_mdo"></a>
 ### The WriterT monad transformer macro wrt_mdo! 
 
-Only for Vec, LinkedList or VecDeque as inner monads.
+Only for Vec, LinkedList or VecDeque as inner monads. You can lift expressions of either monad, since binding is done through iterate and collect.
+
+Added macro keywords tell_str, tell_array, tell_vec, tell_string that save to type annotate the monad as the macro output do it for you. They use the `Log` type alias in macro output type annotations.
+
+Now the keyword `pure return_expresion` lifts the return_expresion through a Vec::pure(return_expression) 
 
 Example:
 
@@ -429,12 +385,12 @@ Example:
 //! by beginning with a `tell...` function within the macro `wrdo` 
 //! or by declaring it as the result type 
 //! where String is the default if omitted
-//! as in `let res : Writer< _, String > = wrdo!{...}`
+//! as in `let res : WriterT< _, String > = wrdo!{...}`
 //!
 //! `censor(), listen() and listens()` can be used as functions or as methods of a Writer bloc
 
 #[allow(unused_imports)]
-use monadic::{wrt_mdo, monad::Monad, writer_trans::{WriterT, lift, tell, tell_str, censor, listen}};
+use monadic::{wrt_mdo, monad::Monad, writer_trans::{WriterT, tell, tell_str, tell_array, censor, listen}};
 use monadic::util::concat_string_str;
 use partial_application::partial;
 use num::Integer;
@@ -445,20 +401,22 @@ fn main() {
     
     let bloc = wrt_mdo!{  // : WriterT< Vec<_>, String>
     
-        _ <- tell_str( "log1") as WriterT< Vec<_>> ;
+        _ <- tell_str "log1" ;
+        
         x <- lift (5..9).collect::<Vec<_>>() ;
+        
         guard x.is_odd() ;
         let z = x + 1;
         
         // run a subbloc and modify its log afterwards
         pair <- censor( modify_log,
                         wrt_mdo!{
-                            _ <- tell_str("sub");
-                            lift Vec::pure( 2)
+                            _ <- tell_str "sub";
+                            pure 2
                         }.listen()
                       );
                     
-        lift Vec::pure( (z, pair.0, pair.1) )            
+        pure (z, pair.0, pair.1)
         }.listen() ;
         
     // unwrap() returns the nested monad structure       
@@ -472,6 +430,61 @@ Execution:
 $ cargo run --example writer_trans1
 
 result: [((6, 2, "sub"), "log1sublog2"), ((8, 2, "sub"), "log1sublog2")]
+```
+Example with Vec as logger:
+
+```rust
+//! examples/writer_trans2.rs
+//!
+//! you may set the logger type 
+//! by beginning with a `tell...` function within the macro `wrdo` 
+//! or by declaring it as the result type 
+//! where String is the default if omitted
+//! as in `let res : WriterT< _, Vec<_>> = wrdo!{...}`
+//!
+//! `censor(), listen() and listens()` can be used as functions or as methods of a Writer bloc
+
+#[allow(unused_imports)]
+use monadic::{wrt_mdo, monad::Monad, writer_trans::{WriterT, tell, tell_str, tell_array, censor, listen}};
+use monadic::util::concat_vec_array;
+use partial_application::partial;
+use num::Integer;
+
+fn main() {
+    
+    let modify_log = partial!( concat_vec_array => _, &[4,5,6]);
+    
+    let bloc = wrt_mdo!{  // : WriterT< Vec<_>, Vec<_>>
+    
+        _ <- tell_array &[1,2,3] ;
+        
+        x <- lift (5..9).collect::<Vec<_>>() ;
+        
+        guard x.is_odd() ;
+        let z = x + 1;
+        
+        // run a subbloc and modify its log afterwards
+        pair <- censor( modify_log,
+                        wrt_mdo!{
+                            _ <- tell_array &[0];
+                            pure 2
+                        }.listen()
+                      );
+                    
+        pure (z, pair.0, pair.1)            
+        }.listen() ;
+        
+    // unwrap() returns the nested monad structure       
+    let res = bloc.unwrap(); 
+    
+    println!("result: {:?}", res); 
+}
+```
+
+```bash
+$ cargo run --example writer_trans2
+
+result: [((6, 2, [0]), [1, 2, 3, 0, 4, 5, 6]), ((8, 2, [0]), [1, 2, 3, 0, 4, 5, 6])]
 ```
 
 <a name="stdo" id="stdo"></a>
@@ -487,8 +500,11 @@ A [State monad](https://wiki.haskell.org/All_About_Monads#The_State_monad) adapt
 
 use monadic::{stdo, state::{State, get, put}};
 
+type St = i32;
+
 fn main() {
-  let bloc: State<'_, i32, _> = stdo!{
+
+  let res = stdo!{  // : State<'_, St, _>
   
        x <- pure 9;
        y <- get();
@@ -496,13 +512,12 @@ fn main() {
        z <- get(); 
        pure (x, y, z) 
        
-    };
-    
-  let res = bloc.initial_state(0);  
+    }.initial_state(0) ;
 
   println!("result: {:?}", res);  
 }
 ```
+Exec.:
 
 ```bash
 $ cargo run --example state1
@@ -521,6 +536,12 @@ test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out
 ```
 
 Changes:
+
+v. 0.5.0: updates on ReaderT and WriterT transformer macros to reduce the number of type annotations
+
+* the macro production "pure" $expr translates to lift(Vec::pure($exp))
+* the ReaderT macro production "$v <- ask()" generates a type annotation in its output using the type alias Env.
+* the WriterT macro productions "_ <- tell_.. $expr" generates a type annotation in its output using the type allias Log.
 
 v. 0.4.10: added let bindings to the ReaderT and WriterT transformers macro
 
