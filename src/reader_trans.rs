@@ -71,10 +71,13 @@ pub fn lift<'a, E: 'a, M: 'a + Clone>(m: M) -> ReaderT<'a, E, M> {
 /// macro for a ReaderT transformer with a boxed `(env -> Monad)`
 #[macro_export]
 macro_rules! rdrt_mdo {
-  (lift $nested_monad:expr                ) => [ReaderT::lift($nested_monad)];
+  (lift $last_nested_monad:expr                ) => [ReaderT::lift($last_nested_monad)];
+  (pure $last_expr:expr                ) => [ReaderT::lift(vec!($last_expr))];
   (guard $boolean:expr ; $($rest:tt)*) => [ReaderT::lift( if $boolean {vec![()]} else {vec![]}).bind( move |_| { rdrt_mdo!($($rest)*)} )];
   (let $v:ident = $e:expr ; $($rest:tt)*) => [ReaderT::lift(vec![$e]).bind( move |$v| { rdrt_mdo!($($rest)*)} )];
   (_ <- $monad:expr ; $($rest:tt)* ) => [ReaderT::bind(($monad), move |_| { rdrt_mdo!($($rest)*)} )];
+  ($v:ident <- ask() ; $($rest:tt)* ) => [( ask() as ReaderT<'_, Env, Vec<Env>>).bind( 
+                                                         move |$v| { rdrt_mdo!($($rest)*)}) ];
   ($v:ident <- lift $nested_monad:expr ; $($rest:tt)* ) => [ReaderT::bind( ReaderT::lift($nested_monad), move |$v| { rdrt_mdo!($($rest)*)} )];
   ($v:ident <- $monad:expr ; $($rest:tt)* ) => [ReaderT::bind(($monad), move |$v| { rdrt_mdo!($($rest)*)} )];
   ($monad:expr                            ) => [$monad];
