@@ -95,8 +95,8 @@ impl<A, W: Monoid + Clone> Writer<A, W> {
      }
 }
 
-pub fn tell<W>(s: W) -> Writer<(), W> {
-        Writer{ run_writer: ((), s)}
+pub fn tell<W: Clone>(s: W) -> Writer<(), W> {
+        Writer{ run_writer: ((), s.clone())}
     }
 
 pub fn tell_str(s: &str) -> Writer<(), String> {
