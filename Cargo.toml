@@ -1,10 +1,10 @@
 [package]
 name = "monadic"
-version = "0.4.10"
+version = "0.5.0"
 authors = ["Gabriel Riba Faura <griba2001@gmail.com>"]
 edition = "2018"
 license = "MIT"
-description = "macro to define Haskell style monadic action blocks"
+description = "macros to define Haskell style monadic action blocks for IntoIterators, Reader, Writer, State, and macros for the transformers ReaderT and WriterT over Vec, LinkedList and VecDeque"
 repository = "https://github.com/griba2001/rust-monadic.git"
 homepage = "https://github.com/griba2001/rust-monadic"
 documentation = "https://docs.rs/monadic"
