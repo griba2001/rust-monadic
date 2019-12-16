@@ -213,7 +213,7 @@ use num::Integer;
 use partial_application::partial;
 use std::collections::HashMap;
 
-/// You must use the type alias Env as it is used in the macro
+/// mandatory type alias Env as it is used in the macro
 /// to save you type annotations
 type Env = HashMap<String, i32>; 
 
@@ -385,7 +385,7 @@ Example:
 //! by beginning with a `tell...` function within the macro `wrdo` 
 //! or by declaring it as the result type 
 //! where String is the default if omitted
-//! as in `let res : WriterT< _, String > = wrdo!{...}`
+//! as in `let res : WriterT< _, Log > = wrdo!{...}`
 //!
 //! `censor(), listen() and listens()` can be used as functions or as methods of a Writer bloc
 
@@ -395,11 +395,15 @@ use monadic::util::concat_string_str;
 use partial_application::partial;
 use num::Integer;
 
+/// mandatory type alias Log as it is used in the macro
+/// to save you type annotations
+type Log = String;
+
 fn main() {
     
     let modify_log = partial!( concat_string_str => _, "log2");
     
-    let bloc = wrt_mdo!{  // : WriterT< Vec<_>, String>
+    let bloc = wrt_mdo!{  // : WriterT< Vec<_>, Log>
     
         _ <- tell_str "log1" ;
         
@@ -450,11 +454,15 @@ use monadic::util::concat_vec_array;
 use partial_application::partial;
 use num::Integer;
 
+/// mandatory type alias Log as it is used in the macro
+/// to save you type annotations
+type Log = Vec<i32>;
+
 fn main() {
     
     let modify_log = partial!( concat_vec_array => _, &[4,5,6]);
     
-    let bloc = wrt_mdo!{  // : WriterT< Vec<_>, Vec<_>>
+    let bloc = wrt_mdo!{  // : WriterT< Vec<_>, Log>
     
         _ <- tell_array &[1,2,3] ;
         
@@ -504,15 +512,19 @@ type St = i32;
 
 fn main() {
 
-  let res = stdo!{  // : State<'_, St, _>
+  let bloc: State<'_, St, _> = stdo!{ 
   
        x <- pure 9;
        y <- get();
+       
        _ <- put( 1);
        z <- get(); 
+       
        pure (x, y, z) 
        
-    }.initial_state(0) ;
+    };
+    
+    let res = bloc.initial_state(0) ;
 
   println!("result: {:?}", res);  
 }

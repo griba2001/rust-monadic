@@ -9,15 +9,19 @@ type St = i32;
 
 fn main() {
 
-  let res = stdo!{  // : State<'_, St, _>
+  let bloc: State<'_, St, _> = stdo!{ 
   
        x <- pure 9;
        y <- get();
+       
        _ <- put( 1);
        z <- get(); 
+       
        pure (x, y, z) 
        
-    }.initial_state(0) ;
+    };
+    
+    let res = bloc.initial_state(0) ;
 
   println!("result: {:?}", res);  
 }

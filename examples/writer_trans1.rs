@@ -14,6 +14,8 @@ use monadic::util::concat_string_str;
 use partial_application::partial;
 use num::Integer;
 
+/// mandatory type alias Log as it is used in the macro
+/// to save you type annotations
 type Log = String;
 
 fn main() {

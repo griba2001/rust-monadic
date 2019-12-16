@@ -7,7 +7,7 @@ use num::Integer;
 use partial_application::partial;
 use std::collections::HashMap;
 
-/// You must use the type alias Env as it is used in the macro
+/// mandatory type alias Env as it is used in the macro
 /// to save you type annotations
 type Env = HashMap<String, i32>; 
 
