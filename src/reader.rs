@@ -56,7 +56,7 @@ pub fn local<'a, E, A, F>(f: F, rdr: Reader<'a, E, A>) -> Reader<'a, E, A>
   }
 
   
-/// macro for a Reader<'a, E, A> monad with a boxed `(env -> a)` function  
+/// macro for a `Reader<'a, E, A>` monad with a boxed `(env -> a)` function  
 #[macro_export]
 macro_rules! rdrdo {
   // (rdrdo! $body:block) => [rdrdo!$body];

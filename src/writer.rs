@@ -125,7 +125,7 @@ pub fn listens<A, W: Clone, T, F: Fn(W) -> T>( f: F, writer: Writer<A, W>) -> Wr
 }
 
     
-/// macro for a Writer monad that holds a pair (A, Monoid)
+/// macro for a `Writer<A, W = String>` monad that holds a pair (A, Monoid)
 ///
 /// The logger type (a local *Monoid* instance) can be established by using a `tell_...()` generator
 /// or by constraining the type of the macro result.
