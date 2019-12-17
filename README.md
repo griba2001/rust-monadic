@@ -6,6 +6,7 @@
 * [A Writer monad bloc macro](#wrdo)
 * [A WriterT monad transformer bloc macro](#wrt_mdo)
 * [A State monad bloc macro](#stdo)
+* [A StateT monad transformer bloc macro](#stt_mdo)
 
 <a name="mdo" id="mdo"></a>
 ### The macro mdo! 
@@ -534,7 +535,52 @@ $ cargo run --example state1
 result: ((9, 0, 1), 1)
 
 ```
-Some tests:
+
+<a name="stt_mdo" id="stt_mdo"></a>
+### The StateT monad transformer macro stt_mdo! 
+
+```rust
+use monadic::{stt_mdo, state_trans::{StateT, get, put}};
+use num::Integer;
+
+// mandatory type alias as it is used within the macro for type annotations
+type St = i32;
+
+fn main() {
+  let bloc = stt_mdo!{ // : StateT<'_, St, Vec<_>, _>    // StateT<'a, St, Monad, A>
+  
+       // x <- lift (5..9).collect::<Vec<_>>() ;
+       x <- lift_iter 5..9 ;                        // lift_iter iterator
+       guard x.is_odd();
+       
+       y <- get() ; 
+       
+       _ <- put( 1) ; 
+       z <- get() ;
+       
+       let v = x +1 ; 
+       
+       pure (v, y, z)
+    };
+  
+  // returns the monad within the transformer boxed function (s -> m (a,s))
+  let res = bloc.initial_state( 0);
+
+  println!("result: {:?}", res);  
+}
+
+```
+Exec:
+
+```bash
+$ cargo run --example state_trans1
+
+result: [((6, 0, 1), 1), ((8, 0, 1), 1)]
+
+```
+
+<a name="tests" id="tests"></a>
+### Some tests
 
 ```bash
 $ cargo test
