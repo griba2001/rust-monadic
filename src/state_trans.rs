@@ -99,7 +99,8 @@ pub fn lift<'a, S, A, M, N>(n: N) -> StateT<'a, S, M, A>
 }
 */
 
-
+/// StateT transformer macro for a `StateT<'a, S, M, A> {run_state_t: Box(a -> m (a, s))} where S = St, M: Monad`;
+/// It uses the type alias St in type annotations.
 #[macro_export]
 macro_rules! stt_mdo {
   (pure $e:expr)                       => [StateT::<'_, St, Vec<_>, _>::pure($e)];

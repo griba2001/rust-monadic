@@ -138,7 +138,8 @@ pub fn tell_array<T: Clone>(v: &[T]) -> WriterT<Vec<()>, Vec<T>> {
         WriterT{ run_writer_t: (vec!(()), Vec::from( v))}
     }
     
-/// WriterT monad transformer macro
+/// WriterT monad transformer macro for a `WriterT<M, W> {run_writer_t: (M, W)} where M: Monad, W: Monoid;`
+/// It uses the type alias Log in type annotations
 #[macro_export]
 macro_rules! wrt_mdo {
   (lift $nested_monad:expr                ) => [WriterT::lift($nested_monad)];

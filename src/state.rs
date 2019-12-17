@@ -36,7 +36,7 @@ pub fn put<'a, S: Clone + 'a>( s: S) -> State<'a, S, ()> {
    State { run_state: Box::new( move |_| ( (), s.clone()) )} 
 }
 
-/// macro for a State monad with a boxed `(s -> (a, s))` function
+/// macro for a State<'a, S, A> monad with a boxed `(s -> (a, s))` function
 #[macro_export]
 macro_rules! stdo {
   (pure $e:expr                           ) => [State::pure($e)];

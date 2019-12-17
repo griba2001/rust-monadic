@@ -592,6 +592,8 @@ test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out
 
 Changes:
 
+v. 0.5.1: StateT transformer macro
+
 v. 0.5.0: updates on ReaderT and WriterT transformer macros to reduce the number of type annotations
 
 * the macro production "pure" $expr translates to lift(Vec::pure($exp))

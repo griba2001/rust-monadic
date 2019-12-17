@@ -68,7 +68,8 @@ pub fn lift<'a, E: 'a, M: 'a + Clone>(m: M) -> ReaderT<'a, E, M> {
      ReaderT { run_reader_t: Box::new( move |_| m.clone() )}
 }
 
-/// macro for a ReaderT transformer with a boxed `(env -> Monad)`
+/// ReaderT transformer macro for a `ReaderT<'a, E, M> {run_reader_t: Box(env -> m a)} where E = Env, M: Monad`. 
+/// It uses the type alias Env in type annotations
 #[macro_export]
 macro_rules! rdrt_mdo {
   (lift $last_nested_monad:expr                ) => [ReaderT::lift($last_nested_monad)];
