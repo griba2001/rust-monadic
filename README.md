@@ -2,10 +2,10 @@
 
 * [A monad bloc macro based on Bind and Monad as supertraits of IntoIterator (iterables)](#mdo)
 * [A Reader monad bloc macro](#rdrdo)
-* [A ReaderT monad transformer bloc macro](#rdrt_mdo)
 * [A Writer monad bloc macro](#wrdo)
-* [A WriterT monad transformer bloc macro](#wrt_mdo)
 * [A State monad bloc macro](#stdo)
+* [A ReaderT monad transformer bloc macro](#rdrt_mdo)
+* [A WriterT monad transformer bloc macro](#wrt_mdo)
 * [A StateT monad transformer bloc macro](#stt_mdo)
 
 <a name="mdo" id="mdo"></a>
@@ -240,7 +240,8 @@ fn main() {
        // run a subblock with a modified env.
        pair <- local( modify_env, rdrt_mdo!{
        
-               x <- lift (5..9).collect::<Vec<_>>();
+               // x <- lift (5..9).collect::<Vec<_>>();
+               x <- lift_iter 5..9;
                
                guard x.is_odd();
                
@@ -393,19 +394,19 @@ use monadic::util::concat_string_str;
 use partial_application::partial;
 use num::Integer;
 
-/// mandatory type alias Log as it is used in the macro
-/// to save you type annotations
-type Log = String;
+#[allow(dead_code)]
+type Log = String; // used in some macro constructs
 
 fn main() {
     
     let modify_log = partial!( concat_string_str => _, "log2");
     
-    let bloc = wrt_mdo!{  // : WriterT< Vec<_>, Log>
+    let bloc = wrt_mdo!{  // : WriterT< Vec<_>>  // type param. `log` defaults to String
     
         _ <- tell_str "log1" ;
         
-        x <- lift (5..9).collect::<Vec<_>>() ;
+        // x <- lift (5..9).collect::<Vec<_>>() ;
+        x <- lift_iter 5..9 ;
         
         guard x.is_odd() ;
         let z = x + 1;
@@ -452,7 +453,8 @@ use monadic::util::concat_vec_array;
 use partial_application::partial;
 use num::Integer;
 
-/// mandatory type alias Log as it is used in the macro
+/// mandatory type alias Log only if it is not the default
+/// as it is used in the macro
 /// to save you type annotations
 type Log = Vec<i32>;
 

@@ -33,7 +33,8 @@ fn main() {
        // run a subblock with a modified env.
        pair <- local( modify_env, rdrt_mdo!{
        
-               x <- lift (5..9).collect::<Vec<_>>();
+               // x <- lift (5..9).collect::<Vec<_>>();
+               x <- lift_iter 5..9;
                
                guard x.is_odd();
                

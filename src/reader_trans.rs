@@ -12,7 +12,7 @@ impl<'a, A, E, M> ReaderT<'a, E, M>
     where
       E: 'a + Clone, 
       A: 'a + Clone,
-      M: 'a + Clone + Monad<Item=A>, 
+      M: 'a + Clone + Monad<Item=A> + FromIterator<A>, 
 {
 
   /// This function requires to type annotate the inner monad, better use lift( MonadInstance::pure)
@@ -44,6 +44,14 @@ impl<'a, A, E, M> ReaderT<'a, E, M>
      pub fn lift(m: M) -> ReaderT<'a, E, M> {
         ReaderT { run_reader_t: Box::new( move |_| m.clone() )}
      }
+     
+     /// lift from iterator
+     pub fn lift_iter<I>( it: I) -> ReaderT<'a, E, M> 
+       where 
+         I: 'a + Iterator<Item=A> + Clone,
+     {
+        ReaderT { run_reader_t: Box::new( move |_| it.clone().collect::<M>() )}
+     }
 }
 
 pub fn ask<'a, E: Clone, M: Monad<Item=E>>() -> ReaderT<'a, E, M> {
@@ -68,7 +76,7 @@ pub fn lift<'a, E: 'a, M: 'a + Clone>(m: M) -> ReaderT<'a, E, M> {
      ReaderT { run_reader_t: Box::new( move |_| m.clone() )}
 }
 
-/// macro for a `ReaderT<'a, E, M>` monad transformer with a boxed `(env -> m a) where M: Monad`. 
+/// macro for a `ReaderT<'a, E, M>` monad transformer with a boxed `(env -> m a) where M: Monad + FromIterator`. 
 /// It uses the type alias Env in type annotations
 #[macro_export]
 macro_rules! rdrt_mdo {
@@ -79,7 +87,8 @@ macro_rules! rdrt_mdo {
   (_ <- $monad:expr ; $($rest:tt)* ) => [ReaderT::bind(($monad), move |_| { rdrt_mdo!($($rest)*)} )];
   ($v:ident <- ask() ; $($rest:tt)* ) => [( ask() as ReaderT<'_, Env, Vec<Env>>).bind( 
                                                          move |$v| { rdrt_mdo!($($rest)*)}) ];
-  ($v:ident <- lift $nested_monad:expr ; $($rest:tt)* ) => [ReaderT::bind( ReaderT::lift($nested_monad), move |$v| { rdrt_mdo!($($rest)*)} )];
+  ($v:ident <- lift_iter $iterator:expr ; $($rest:tt)* ) => [ReaderT::<'_, Env, Vec<_>>::lift_iter($iterator).bind( move |$v| { rdrt_mdo!($($rest)*)} )];
+  ($v:ident <- lift $nested_monad:expr ; $($rest:tt)* ) => [ReaderT::lift($nested_monad).bind( move |$v| { rdrt_mdo!($($rest)*)} )];
   ($v:ident <- $monad:expr ; $($rest:tt)* ) => [ReaderT::bind(($monad), move |$v| { rdrt_mdo!($($rest)*)} )];
   ($monad:expr                            ) => [$monad];
 }

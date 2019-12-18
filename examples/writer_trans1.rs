@@ -14,19 +14,19 @@ use monadic::util::concat_string_str;
 use partial_application::partial;
 use num::Integer;
 
-/// mandatory type alias Log as it is used in the macro
-/// to save you type annotations
-type Log = String;
+#[allow(dead_code)]
+type Log = String; // used in some macro constructs
 
 fn main() {
     
     let modify_log = partial!( concat_string_str => _, "log2");
     
-    let bloc = wrt_mdo!{  // : WriterT< Vec<_>, Log>
+    let bloc = wrt_mdo!{  // : WriterT< Vec<_>>  // type param. `log` defaults to String
     
         _ <- tell_str "log1" ;
         
-        x <- lift (5..9).collect::<Vec<_>>() ;
+        // x <- lift (5..9).collect::<Vec<_>>() ;
+        x <- lift_iter 5..9 ;
         
         guard x.is_odd() ;
         let z = x + 1;

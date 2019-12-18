@@ -14,7 +14,8 @@ use monadic::util::concat_vec_array;
 use partial_application::partial;
 use num::Integer;
 
-/// mandatory type alias Log as it is used in the macro
+/// mandatory type alias Log only if it is not the default
+/// as it is used in the macro
 /// to save you type annotations
 type Log = Vec<i32>;
 
