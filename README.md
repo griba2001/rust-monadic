@@ -27,7 +27,7 @@ Here is a table where a **monadic_expression** is one of a type which must be in
 <tr><td>* to return an expression value:</td> <th>`pure return_expresion`</th></tr>
 <tr><td>* to end with a monadic expr.:</td> <th>`monadic_expression`</th></tr>
 <tr><td>* to bind the monad result:</td> <th>`v <- monadic_expression`</th></tr>
-<tr><td>* to bind by ref. a by ref. container:</td> <th>`&v <- &container`</th></tr>
+<tr><td>* to bind with arg. pattern `&v` a shared container:</td> <th>`&v <- &container`</th></tr>
 <tr><td>* to lift a value and bind it:</td> <th>`v <- pure expression`</th></tr>
 <tr><td>* to ignore the monad result:</td> <th>`_ <- monadic_expression`</th></tr>
 <tr><td>* to combine monad results:</td> <th>`let z = expression`</th></tr>
