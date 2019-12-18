@@ -27,7 +27,7 @@ Here is a table where a **monadic_expression** is one of a type which must be in
 <tr><td>* to return an expression value:</td> <th>`pure return_expresion`</th></tr>
 <tr><td>* to end with a monadic expr.:</td> <th>`monadic_expression`</th></tr>
 <tr><td>* to bind the monad result:</td> <th>`v <- monadic_expression`</th></tr>
-<tr><td>* to bind with result pattern `&v` a shared container:</td> <th>`&v <- &container`</th></tr>
+<tr><td>* to deref the ref. item `&v` of a shared container:</td> <th>`&v <- &container`</th></tr>
 <tr><td>* to lift a value and bind it:</td> <th>`v <- pure expression`</th></tr>
 <tr><td>* to ignore the monad result:</td> <th>`_ <- monadic_expression`</th></tr>
 <tr><td>* to combine monad results:</td> <th>`let z = expression`</th></tr>
@@ -593,6 +593,8 @@ test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out
 ```
 
 Changes:
+
+v. 0.5.2: added lift_iter to ReaderT and WriterT, plus the deref bind pattern (&v) in macros
 
 v. 0.5.1: StateT transformer macro
 

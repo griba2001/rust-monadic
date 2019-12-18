@@ -152,21 +152,35 @@ pub fn tell_array<T: Clone>(v: &[T]) -> WriterT<Vec<()>, Vec<T>> {
 #[macro_export]
 macro_rules! wrt_mdo {
   (lift $nested_monad:expr                ) => [WriterT::lift($nested_monad)];
+  
   (pure $e:expr                ) => [WriterT::lift(vec!($e))];
+  
   (guard $boolean:expr ; $($rest:tt)*) => [WriterT::lift( if $boolean {vec![()]} else {vec![]}).bind( move |_| { wrt_mdo!($($rest)*)} )];
+  
   (_ <- tell_str $str:literal ; $($rest:tt)* ) => [(tell_str($str) as WriterT<Vec<_>>).bind( 
                                                       move |_| { wrt_mdo!($($rest)*)} )];
+                                                      
   (_ <- tell_array $ar:expr ; $($rest:tt)* ) => [(tell_array($ar) as WriterT<Vec<_>, Log>).bind( 
                                                       move |_| { wrt_mdo!($($rest)*)} )];
+                                                      
   (_ <- tell_vec $e:expr ; $($rest:tt)* ) => [(tell($e) as WriterT<Vec<_>, Log>).bind( 
                                                       move |_| { wrt_mdo!($($rest)*)} )];
+                                                      
   (_ <- tell_string $e:expr ; $($rest:tt)* ) => [(tell($e) as WriterT<Vec<_>>).bind( 
                                                       move |_| { wrt_mdo!($($rest)*)} )];
+                                                      
   (_ <- $monad:expr ; $($rest:tt)* ) => [WriterT::bind(($monad), move |_| { wrt_mdo!($($rest)*)} )];
+  
   (let $v:ident = $e:expr ; $($rest:tt)* ) => [WriterT::lift(vec!($e)).bind( move |$v| { wrt_mdo!($($rest)*)} )];
+  
   ($v:ident <- lift_iter $iterator:expr ; $($rest:tt)* ) => [WriterT::<Vec<_>, Log>::lift_iter($iterator).bind( move |$v| { wrt_mdo!($($rest)*)} )];
+  
+  (& $v:ident <- lift $nested_monad:expr ; $($rest:tt)* ) => [WriterT::lift($nested_monad).bind( move |& $v| { wrt_mdo!($($rest)*)} )];
+  
   ($v:ident <- lift $nested_monad:expr ; $($rest:tt)* ) => [WriterT::lift($nested_monad).bind( move |$v| { wrt_mdo!($($rest)*)} )];
+  
   ($v:ident <- $monad:expr ; $($rest:tt)* ) => [WriterT::bind(($monad), move |$v| { wrt_mdo!($($rest)*)} )];
+  
   ($monad:expr                            ) => [$monad];
 }
 

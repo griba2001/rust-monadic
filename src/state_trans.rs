@@ -104,13 +104,23 @@ pub fn lift<'a, S, A, M, N>(n: N) -> StateT<'a, S, M, A>
 #[macro_export]
 macro_rules! stt_mdo {
   (pure $e:expr)                       => [StateT::<'_, St, Vec<_>, _>::pure($e)];
+  
   (lift $nested_monad:expr)            => [StateT::<'_, St, Vec<_>, _>::lift($nested_monad)];
+  
   (guard $boolean:expr ; $($rest:tt)*) => [StateT::<'_, St, Vec<_>, _>::lift(if $boolean {vec![()]} else {vec![]}).bind( move |_| { stt_mdo!($($rest)*)} )];
+  
   (_ <- $monad:expr ; $($rest:tt)* ) => [StateT::bind(($monad), move |_| { stt_mdo!($($rest)*)} )];
+  
   ($v:ident <- lift_iter $it:expr ; $($rest:tt)* ) => [StateT::<'_, St, Vec<_>, _>::lift_iter($it).bind( move |$v| { stt_mdo!($($rest)*)} )];
+  
+  (& $v:ident <- lift $nested_monad:expr ; $($rest:tt)* ) => [StateT::<'_, St, Vec<_>, _>::lift($nested_monad).bind( move |& $v| { stt_mdo!($($rest)*)} )];
+  
   ($v:ident <- lift $nested_monad:expr ; $($rest:tt)* ) => [StateT::<'_, St, Vec<_>, _>::lift($nested_monad).bind( move |$v| { stt_mdo!($($rest)*)} )];
+  
   (let $v:ident = $e:expr ; $($rest:tt)* ) => [StateT::bind(StateT::<'_, St, Vec<_>, _>::pure($e), move |$v| { stt_mdo!($($rest)*)} )];
+  
   ($v:ident <- $monad:expr ; $($rest:tt)* ) => [StateT::bind(($monad), move |$v| { stt_mdo!($($rest)*)} )];
+  
   ($monad:expr                            ) => [$monad];
 }
 
