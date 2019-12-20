@@ -15,7 +15,7 @@ A macro to write Haskell style monadic code
 
 for [**IntoIterator**](https://doc.rust-lang.org/std/iter/trait.IntoIterator.html) (iterables) as monads
 
-Each step monad expression is [flat_mapped](https://doc.rust-lang.org/std/iter/trait.Iterator.html#method.flat_map) with the rest into a lazy *FlatMap* expression which implements *IntoIterator* with lambdas as [*move* closures](https://doc.rust-lang.org/1.30.0/book/first-edition/closures.html#move-closures) capturing the environment and argument. The lambda body will be recursively parsed as monadic, and its type should also be an instance of *IntoIterator*.
+Each step monad expression is [flat_mapped](https://doc.rust-lang.org/std/iter/trait.Iterator.html#method.flat_map) with the rest into a lazy *FlatMap* expression which implements *IntoIterator* with lambdas as [*move* closures](https://doc.rust-lang.org/1.30.0/book/first-edition/closures.html#move-closures) capturing the environment and argument as `Fn(A) -> U: IntoIterator`. The lambda body will be recursively parsed as monadic, and its type should also be an instance of *IntoIterator*.
 
 Aside from the types that implement *IntoIterator*, all iterators also do it as [documented](https://doc.rust-lang.org/stable/core/iter/#for-loops-and-intoiterator).
 
@@ -594,10 +594,12 @@ test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out
 
 Changes:
 
-v. 0.5.3: feature based conditional compilation, features ["reader", "reader_trans", "writer", "writer_trans", "state", "state_trans"]. Default is all compiled. The module Monad with its macro "mdo" is incontitionally compiled.
+v. 0.5.4: readme typos 
+
+v. 0.5.3: feature based conditional compilation, features ["reader", "reader_trans", "writer", "writer_trans", "state", "state_trans"]. Default is all compiled. The module Monad with its macro "mdo" is unconditionally compiled.
 
     [dependencies.monadic]
-    version = "^0.5"
+    version = "~0.5"
     default-features = false
     features = ["reader_trans"]    # pick the modules of your interest.
 
