@@ -597,9 +597,9 @@ Changes:
 v. 0.5.3: feature based conditional compilation, features ["reader", "reader_trans", "writer", "writer_trans", "state", "state_trans"]. Default is all compiled. The module Monad with its macro "mdo" is incontitionally compiled.
 
     [dependencies.monadic]
-    version = "0.5^"
+    version = "^0.5"
     default-features = false
-    features = ["reader_trans"]  // pick the modules of your interest.
+    features = ["reader_trans"]    # pick the modules of your interest.
 
 
 v. 0.5.2: added lift_iter to ReaderT and WriterT, plus the deref bind pattern (&v) in macros
