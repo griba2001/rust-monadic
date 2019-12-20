@@ -56,12 +56,29 @@
 //! ```
 
 pub mod monad;
-pub mod monoid;
-pub mod reader;
-pub mod writer;
-pub mod util;
-pub mod state;
 pub mod mio;
+
+#[cfg(feature="reader")]
+pub mod reader;
+
+#[cfg(feature="reader_trans")]
 pub mod reader_trans;
+
+#[cfg(feature="writer")]
+pub mod writer;
+
+#[cfg(feature="writer_trans")]
 pub mod writer_trans;
+
+
+#[cfg(feature="state")]
+pub mod state;
+
+#[cfg(feature="state_trans")]
 pub mod state_trans;
+
+#[cfg(any(feature="writer", feature="writer_trans"))]
+pub mod util;
+
+#[cfg(any(feature="writer", feature="writer_trans"))]
+pub mod monoid;
