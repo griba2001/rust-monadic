@@ -21,17 +21,17 @@ Aside from the types that implement *IntoIterator*, all iterators also do it as 
 
 The traits **Bind** and **Monad** are defined in module *monad* as supertraits of IntoIterator.
 
-Here is a table where a **monadic_expression** is one of a type which must be instance of IntoIterator: 
+Here is a table of patterns of the macro `mdo` where a **monadic_expression** is one of a type which must be instance of IntoIterator: 
 
 <table>
-<tr><td>* to return an expression value:</td> <th>`pure return_expresion`</th></tr>
+<tr><td>* to return an expression value:</td> <th>`"pure" return_expresion`</th></tr>
+<tr><td>* to combine monad results:</td> <th>`"let" identifier "=" expression ";"`</th></tr>
+<tr><td>* to filter results:</td> <th>`"guard" boolean_expression ";"`</th></tr>
+<tr><td>* to ignore the monad result:</td> <th>`"_" "<-" monadic_expression ";"`</th></tr>
+<tr><td>* to deref the item ref. of a shared iterable:</td> <th>`"&" identifier "<-" &iterable ";"`</th></tr>
+<tr><td>* to lift a value and bind it:</td> <th>`identifier "<-" "pure" expression ";"`</th></tr>
+<tr><td>* to bind the monad result:</td> <th>`identifier "<-" monadic_expression ";"`</th></tr>
 <tr><td>* to end with a monadic expr.:</td> <th>`monadic_expression`</th></tr>
-<tr><td>* to bind the monad result:</td> <th>`v <- monadic_expression`</th></tr>
-<tr><td>* to deref the ref. item of a shared container:</td> <th>`&v <- &container`</th></tr>
-<tr><td>* to lift a value and bind it:</td> <th>`v <- pure expression`</th></tr>
-<tr><td>* to ignore the monad result:</td> <th>`_ <- monadic_expression`</th></tr>
-<tr><td>* to combine monad results:</td> <th>`let z = expression`</th></tr>
-<tr><td>* to filter results:</td> <th>`guard boolean_expression`</th></tr>
 </table>
 
 Note: *let*, within the macro, introduces only one binding.
